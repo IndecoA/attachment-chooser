@@ -12,64 +12,45 @@
 
     <style>
         :root { 
-            --indeco-red: #e74c3c; 
-            --indeco-blue: #3498db; 
-            --indeco-lightblue: #5dade2; /* NEW: Light Blue for IMG */
-            --indeco-green: #27ae60; 
-            --indeco-orange: #e67e22; 
-            --indeco-teal: #1abc9c; 
-            --indeco-olive: #556b2f;
-            --dark: #2c3e50; 
-            --gray: #95a5a6;
+            --indeco-red: #e74c3c; --indeco-blue: #3498db; --indeco-lightblue: #5dade2; 
+            --indeco-green: #27ae60; --indeco-orange: #e67e22; --indeco-teal: #1abc9c; 
+            --indeco-olive: #556b2f; --dark: #2c3e50; --gray: #95a5a6;
         }
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f4f7f6; margin: 0; padding: 20px; color: #333; }
         .container { max-width: 1000px; margin: 0 auto; }
         
-        .search-card { background: white; padding: 20px 30px 30px 30px; border-radius: 15px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); text-align: center; margin-bottom: 30px; }
-        .indeco-logo { width: 100%; max-width: 320px; height: auto; margin: 0 auto 20px auto; display: block; }
+        .search-card { background: white; padding: 25px; border-radius: 15px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); text-align: center; margin-bottom: 30px; }
+        .indeco-logo { width: 100%; max-width: 320px; height: auto; margin-bottom: 20px; }
 
-        .input-group { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-bottom: 20px; }
-        input, select { padding: 15px; border: 2px solid #ddd; border-radius: 8px; font-size: 16px; outline: none; transition: border-color 0.2s; }
-        input { width: 140px; }
-        select { background: white; cursor: pointer; min-width: 180px; }
+        .input-group { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-bottom: 20px; }
+        input, select { padding: 15px; border: 2px solid #ddd; border-radius: 8px; font-size: 16px; outline: none; }
         
-        .action-group { display: flex; gap: 10px; justify-content: center; max-width: 500px; margin: 0 auto; }
-        button { padding: 15px 25px; border: none; border-radius: 8px; font-size: 16px; cursor: pointer; font-weight: bold; transition: opacity 0.2s; }
-
-        #results { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
-        .product-card { padding: 15px; border-radius: 12px; background: white; box-shadow: 0 4px 12px rgba(0,0,0,0.08); text-align: center; border-top: 6px solid #ccc; display: flex; flex-direction: column; }
-        
-        /* Category Colors */
-        .product-card.red { border-top-color: var(--indeco-red); }
-        .product-card.blue { border-top-color: var(--indeco-blue); }
+        #results { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 15px; }
+        .product-card { padding: 15px; border-radius: 12px; background: white; box-shadow: 0 4px 12px rgba(0,0,0,0.08); text-align: center; border-top: 6px solid #ccc; }
         .product-card.lightblue { border-top-color: var(--indeco-lightblue); }
-        .product-card.green { border-top-color: var(--indeco-green); }
-        .product-card.orange { border-top-color: var(--indeco-orange); }
-        .product-card.teal { border-top-color: var(--indeco-teal); }
-        .product-card.olive { border-top-color: var(--indeco-olive); }
 
-        .series-label { font-size: 11px; text-transform: uppercase; color: #888; margin-bottom: 10px; font-weight: bold; }
-        .view-btn { color: white; border: none; padding: 18px 10px; border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: 0 3px 6px rgba(0,0,0,0.15); }
-
-        /* Modal Styles */
+        /* MODAL & GALLERY */
         .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); overflow-y: auto; }
-        .modal-content { background: white; margin: 2% auto; border-radius: 20px; width: 96%; max-width: 850px; overflow: hidden; position: relative; box-shadow: 0 20px 50px rgba(0,0,0,0.3); }
-        .modal-header { padding: 25px; background: #f8f9fa; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; }
+        .modal-content { background: white; margin: 1% auto; border-radius: 20px; width: 96%; max-width: 850px; min-height: 85vh; overflow: hidden; position: relative; }
         
-        .modal-gallery { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; background: #fff; gap: 0; border-bottom: 1px solid #eee; }
-        .product-img { flex: 0 0 100%; scroll-snap-align: start; max-height: 500px; width: 100%; object-fit: contain; }
-        
-        .modal-body { padding: 30px; }
-        table { width: 100%; border-collapse: collapse; font-size: 16px; }
-        td { padding: 15px 10px; border-bottom: 1px solid #f0f0f0; }
-        .label { font-weight: bold; color: #7f8c8d; width: 45%; }
-        .value { text-align: right; color: #2c3e50; font-weight: 600; }
-        .close { font-size: 40px; cursor: pointer; color: #aaa; line-height: 1; }
+        .modal-gallery { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; background: #fff; border-bottom: 1px solid #eee; }
+        .product-img { flex: 0 0 100%; scroll-snap-align: start; max-height: 500px; width: 100%; object-fit: contain; cursor: zoom-in; transition: opacity 0.2s; }
+        .product-img:hover { opacity: 0.9; }
+        .img-extra-long .product-img { max-height: 650px; }
+
+        .modal-body { padding: 25px; }
+        table { width: 100%; border-collapse: collapse; }
+        td { padding: 12px; border-bottom: 1px solid #f0f0f0; }
+        .label { font-weight: bold; color: #7f8c8d; }
+        .value { text-align: right; font-weight: 600; }
+        .close { font-size: 40px; cursor: pointer; color: #aaa; float: right; padding: 10px; line-height: 0.5; }
+
+        /* LIGHTBOX ZOOM */
+        #lightbox { display: none; position: fixed; z-index: 2000; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); justify-content: center; align-items: center; cursor: zoom-out; }
+        #lightbox img { max-width: 95%; max-height: 95%; object-fit: contain; }
 
         @media (max-width: 600px) {
-            .product-img { max-height: 350px; }
-            .modal-body { padding: 15px; }
-            table { font-size: 14px; }
+            .modal-content { margin: 0; border-radius: 0; width: 100%; min-height: 100vh; }
         }
     </style>
 </head>
@@ -77,43 +58,39 @@
 
 <div class="container">
     <div class="search-card">
-        <img src="http://www.indeco.com.au/wp-content/uploads/2026/03/50th.png" class="indeco-logo" alt="Indeco Logo">
-        <p style="color:#666; margin-bottom: 20px;">Enter Carrier Weight (t) to find compatible attachments</p>
+        <img src="http://www.indeco.com.au/wp-content/uploads/2026/03/50th.png" class="indeco-logo">
         <div class="input-group">
             <select id="categorySelect">
                 <option value="ALL">All Categories</option>
-                <option value="Hammers">Hammers</option>
-                <option value="IDC">IDC</option>
-                <option value="IMG">IMG</option>
-                <option value="IMP">IMP</option>
-                <option value="IRP">IRP</option>
-                <option value="IFP">IFP</option>
-                <option value="Shears">Shears</option>
-                <option value="Compaction Plates">Compaction Plates</option>
+                <option value="Hammers">Hammers</option><option value="IDC">IDC</option>
+                <option value="IMG">IMG</option><option value="IMP">IMP</option>
+                <option value="IRP">IRP</option><option value="IFP">IFP</option>
+                <option value="Shears">Shears</option><option value="Compaction Plates">Compaction Plates</option>
                 <option value="Mulching Heads">Mulching Heads</option>
             </select>
             <input type="number" id="weightInput" step="0.1" placeholder="Weight (t)" onkeydown="if(event.key === 'Enter') performSearch()">
         </div>
-        <div class="action-group">
-            <button id="searchBtn" onclick="performSearch()" style="background: var(--dark); color: white; flex: 2;">SEARCH</button>
-            <button id="resetBtn" onclick="resetSearch()" style="background: var(--gray); color: white; flex: 1;">RESET</button>
-        </div>
+        <button onclick="performSearch()" style="background: var(--dark); color: white; padding: 15px 40px; border-radius: 8px; font-weight: bold; cursor: pointer; border: none;">SEARCH</button>
     </div>
     <div id="results"></div>
 </div>
 
 <div id="specModal" class="modal">
-    <div class="modal-content">
-        <div class="modal-header">
-            <h2 id="modalTitle" style="margin:0"></h2>
-            <span class="close" onclick="closeModal()">&times;</span>
+    <div id="modalContainer" class="modal-content">
+        <span class="close" onclick="closeModal()">&times;</span>
+        <div class="modal-body">
+            <h2 id="modalTitle" style="margin-top:0"></h2>
         </div>
         <div id="modalImageContainer" class="modal-gallery"></div>
         <div class="modal-body">
             <div id="modalTable"></div>
-            <button onclick="closeModal()" style="margin-top:25px; width:100%; background:var(--dark); color:white; padding:15px; border-radius:10px; cursor:pointer; font-weight:bold; border:none;">CLOSE SPECIFICATIONS</button>
+            <button onclick="closeModal()" style="margin-top:30px; width:100%; background:var(--dark); color:white; padding:18px; border-radius:10px; cursor:pointer; font-weight:bold; border:none;">BACK TO RESULTS</button>
         </div>
     </div>
+</div>
+
+<div id="lightbox" onclick="this.style.display='none'">
+    <img id="zoomImg" src="">
 </div>
 
 <script>
@@ -131,22 +108,14 @@ const sources = [
 
 let globalResults = [];
 
-function resetSearch() {
-    document.getElementById('weightInput').value = "";
-    document.getElementById('results').innerHTML = "";
-    globalResults = [];
-}
-
 async function performSearch() {
     const selectedCategory = document.getElementById('categorySelect').value;
     const searchWeight = parseFloat(document.getElementById('weightInput').value);
     const container = document.getElementById('results');
     if (isNaN(searchWeight)) return;
-
-    container.innerHTML = "<p style='grid-column: 1/-1; text-align:center;'>Searching...</p>";
+    container.innerHTML = "Searching...";
     globalResults = [];
     const sourcesToFetch = selectedCategory === "ALL" ? sources : sources.filter(s => s.name === selectedCategory);
-
     const fetchPromises = sourcesToFetch.map(async (source) => {
         try {
             const response = await fetch(source.url);
@@ -165,8 +134,7 @@ async function performSearch() {
                         specs[label] = val;
                         if (label.toLowerCase().includes("carrier weight")) {
                             weightDisplay = val;
-                            const clean = val.replace(/[^0-9.\-]/g, '');
-                            const range = clean.split('-').map(v => parseFloat(v));
+                            const range = val.replace(/[^0-9.\-]/g, '').split('-').map(v => parseFloat(v));
                             minW = range[0]; maxW = range[1] || range[0];
                         }
                     }
@@ -178,16 +146,13 @@ async function performSearch() {
             return matches;
         } catch (e) { return []; }
     });
-
     const resultsArray = await Promise.all(fetchPromises);
     globalResults = resultsArray.flat();
-
     container.innerHTML = globalResults.map((item, index) => `
         <div class="product-card ${item.color}">
             <div class="series-label">${item.type}</div>
-            <button class="view-btn" style="background:var(--indeco-${item.color})" onclick="openModal(${index})">
-                <span style="font-size: 19px;">${item.modelName}</span>
-                <span style="font-size: 13px; font-weight: normal;">${item.weightDisplay} t</span>
+            <button class="view-btn" style="background:var(--indeco-${item.color}); color:white; border:none; padding:15px; border-radius:8px; width:100%; font-weight:bold; cursor:pointer;" onclick="openModal(${index})">
+                ${item.modelName}<br><span style="font-weight:normal; font-size:12px;">${item.weightDisplay} t</span>
             </button>
         </div>
     `).join("");
@@ -195,30 +160,31 @@ async function performSearch() {
 
 function openModal(index) {
     const item = globalResults[index];
+    const modalContent = document.getElementById('modalContainer');
     document.getElementById('modalTitle').innerText = item.modelName;
+    item.type === "IMG" ? modalContent.classList.add('img-extra-long') : modalContent.classList.remove('img-extra-long');
+
     let tableHTML = "<table>";
     let imgHTML = "";
-    let foundImages = 0;
-
     for (const [key, value] of Object.entries(item.specs)) {
         const lowerKey = key.toLowerCase();
         if ((lowerKey.includes("photo") || lowerKey.includes("image") || lowerKey.includes("diagram")) && value.startsWith("http")) {
-            imgHTML += `<img src="${value}" class="product-img" alt="${key}">`;
-            foundImages++;
+            imgHTML += `<img src="${value}" class="product-img" onclick="zoomImage('${value}')" title="Click to zoom">`;
         } else {
             tableHTML += `<tr><td class="label">${key}</td><td class="value">${value}</td></tr>`;
         }
     }
-
-    const imgContainer = document.getElementById('modalImageContainer');
-    imgContainer.innerHTML = imgHTML;
-    imgContainer.style.display = (foundImages > 0) ? "flex" : "none";
+    document.getElementById('modalImageContainer').innerHTML = imgHTML;
     document.getElementById('modalTable').innerHTML = tableHTML + "</table>";
     document.getElementById('specModal').style.display = "block";
 }
 
+function zoomImage(src) {
+    document.getElementById('zoomImg').src = src;
+    document.getElementById('lightbox').style.display = "flex";
+}
+
 function closeModal() { document.getElementById('specModal').style.display = "none"; }
-window.onclick = function(e) { if (e.target.className === 'modal') closeModal(); }
 </script>
 </body>
 </html>
