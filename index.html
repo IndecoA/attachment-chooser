@@ -1,0 +1,74 @@
+const sources = [
+    { 
+        name: 'HP Series', 
+        url: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ_TkMk68IfYl5ennYorexnetsQ55rU6_yXoHukqFqb1G_Ca57kDLZs1TFLh1e28Uz9QdBRz6bxIfOh/pub?gid=1327187491&single=true&output=csv",
+        color: 'red'
+    },
+    { 
+        name: 'IDC Series', 
+        url: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ_TkMk68IfYl5ennYorexnetsQ55rU6_yXoHukqFqb1G_Ca57kDLZs1TFLh1e28Uz9QdBRz6bxIfOh/pub?gid=1678506384&single=true&output=csv",
+        color: 'blue'
+    }
+];
+
+async function performSearch() {
+    const searchWeight = parseFloat(document.getElementById('weightInput').value);
+    const container = document.getElementById('results');
+    
+    if (isNaN(searchWeight)) { alert("Please enter a numeric weight."); return; }
+    container.innerHTML = "Searching all Indeco lines...";
+
+    let resultsHTML = "";
+    let matchFound = false;
+
+    for (const source of sources) {
+        try {
+            const response = await fetch(source.url);
+            const csvText = await response.text();
+            const rows = csvText.split('\n').map(row => row.split(','));
+            const headers = rows[0].map(h => h.trim());
+
+            // This loops through EVERY model (column) in the sheet
+            // Starting from Index 1 (skipping the "Technical Data" labels)
+            for (let colIndex = 1; colIndex < headers.length; colIndex++) {
+                const modelName = headers[colIndex];
+                if (!modelName) continue;
+
+                let specs = {};
+                let minW = 0, maxW = 0;
+
+                rows.forEach((row) => {
+                    const label = row[0]?.trim();
+                    const value = row[colIndex]?.trim();
+                    
+                    if (label && value) {
+                        specs[label] = value;
+                        if (label.toLowerCase().includes("carrier weight")) {
+                            // Extract numbers from "1.5 - 3" or "10 - 15"
+                            const range = value.split('-').map(v => parseFloat(v.trim()));
+                            minW = range[0];
+                            maxW = range[1] || range[0];
+                        }
+                    }
+                });
+
+                // Check if this specific model fits the search
+                if (searchWeight >= minW && searchWeight <= maxW) {
+                    matchFound = true;
+                    resultsHTML += `
+                        <div class="card ${source.color}">
+                            <h3>${modelName}</h3>
+                            <p><strong>Series:</strong> ${source.name}</p>
+                            <div class="spec-row"><span>Carrier Weight:</span> <span>${specs['Carrier weight'] || specs['Carrier Weight']} t</span></div>
+                            <div class="spec-row"><span>Operating Weight:</span> <span>${specs['Operating weight'] || 'N/A'} kg</span></div>
+                        </div>
+                    `;
+                }
+            }
+        } catch (error) {
+            console.error(`Error fetching ${source.name}:`, error);
+        }
+    }
+
+    container.innerHTML = matchFound ? resultsHTML : "No equipment matches this weight across all series.";
+}
