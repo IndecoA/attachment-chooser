@@ -25,17 +25,17 @@ async function performSearch() {
         try {
             const response = await fetch(source.url);
             const csvText = await response.text();
-            const rows = csvText.split('\n').map(row => row.split(','));
+            
+            // Cleanup: filter out completely empty rows
+            const rows = csvText.split('\n').map(row => row.split(',')).filter(r => r.length > 1);
             const headers = rows[0].map(h => h.trim());
 
-            // This loops through EVERY model (column) in the sheet
-            // Starting from Index 1 (skipping the "Technical Data" labels)
             for (let colIndex = 1; colIndex < headers.length; colIndex++) {
                 const modelName = headers[colIndex];
-                if (!modelName) continue;
+                if (!modelName || modelName === "") continue;
 
                 let specs = {};
-                let minW = 0, maxW = 0;
+                let minW = 0, maxW = 1000; // Default max high so it shows if range is missing
 
                 rows.forEach((row) => {
                     const label = row[0]?.trim();
@@ -44,23 +44,23 @@ async function performSearch() {
                     if (label && value) {
                         specs[label] = value;
                         if (label.toLowerCase().includes("carrier weight")) {
-                            // Extract numbers from "1.5 - 3" or "10 - 15"
-                            const range = value.split('-').map(v => parseFloat(v.trim()));
+                            // Removes anything that isn't a number, dot, or hyphen
+                            const cleanRange = value.replace(/[^0-9.\-]/g, '');
+                            const range = cleanRange.split('-').map(v => parseFloat(v.trim()));
                             minW = range[0];
                             maxW = range[1] || range[0];
                         }
                     }
                 });
 
-                // Check if this specific model fits the search
                 if (searchWeight >= minW && searchWeight <= maxW) {
                     matchFound = true;
                     resultsHTML += `
                         <div class="card ${source.color}">
                             <h3>${modelName}</h3>
                             <p><strong>Series:</strong> ${source.name}</p>
-                            <div class="spec-row"><span>Carrier Weight:</span> <span>${specs['Carrier weight'] || specs['Carrier Weight']} t</span></div>
-                            <div class="spec-row"><span>Operating Weight:</span> <span>${specs['Operating weight'] || 'N/A'} kg</span></div>
+                            <div class="spec-row"><span>Carrier Weight:</span> <span>${specs['Carrier weight'] || specs['Carrier Weight'] || 'N/A'}</span></div>
+                            <div class="spec-row"><span>Operating Weight:</span> <span>${specs['Operating weight'] || specs['Operating Weight'] || 'N/A'}</span></div>
                         </div>
                     `;
                 }
