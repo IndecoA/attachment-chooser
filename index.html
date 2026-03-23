@@ -148,7 +148,7 @@ function openModal(index) {
 
     for (const [key, value] of Object.entries(item.specs)) {
         const lowerKey = key.toLowerCase();
-        if ((lowerKey.includes("image") || lowerKey.includes("photo")) && value.startsWith("http")) {
+        if ((lowerKey.includes("picture") || lowerKey.includes("photo")) && value.startsWith("http")) {
             imgHTML = `<img src="${value}" class="product-img" alt="${item.modelName}">`;
         } else {
             tableHTML += `<tr><td class="label">${key}</td><td class="value">${value}</td></tr>`;
