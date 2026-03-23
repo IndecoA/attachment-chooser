@@ -19,6 +19,7 @@
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f4f7f6; margin: 0; padding: 20px; color: #333; }
         .container { max-width: 1000px; margin: 0 auto; }
         
+        /* Search Interface */
         .search-card { background: white; padding: 20px 30px 30px 30px; border-radius: 15px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); text-align: center; margin-bottom: 30px; }
         .indeco-logo { width: 100%; max-width: 320px; height: auto; margin: 0 auto 20px auto; display: block; }
 
@@ -35,21 +36,42 @@
         .series-label { font-size: 11px; text-transform: uppercase; color: #888; margin-bottom: 10px; font-weight: bold; }
         .view-btn { color: white; border: none; padding: 18px 10px; border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; }
 
-        /* GALLERY STYLES */
-        .modal-gallery { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; background: #fff; gap: 10px; padding: 10px; border-bottom: 1px solid #eee; }
-        .product-img { flex: 0 0 100%; scroll-snap-align: start; max-height: 350px; object-fit: contain; }
-        .modal-gallery::-webkit-scrollbar { height: 6px; }
-        .modal-gallery::-webkit-scrollbar-thumb { background: #ccc; border-radius: 10px; }
+        /* BIGGER MODAL STYLES */
+        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); overflow-y: auto; }
+        
+        /* Modal width increased to 96% for mobile and 800px for desktop */
+        .modal-content { 
+            background: white; 
+            margin: 2% auto; 
+            border-radius: 20px; 
+            width: 96%; 
+            max-width: 850px; 
+            overflow: hidden; 
+            position: relative; 
+            box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+        }
 
-        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); overflow-y: auto; }
-        .modal-content { background: white; margin: 5% auto; border-radius: 15px; width: 92%; max-width: 600px; overflow: hidden; position: relative; }
-        .modal-header { padding: 20px; background: #f8f9fa; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; }
-        .modal-body { padding: 20px; }
-        table { width: 100%; border-collapse: collapse; font-size: 14px; }
-        td { padding: 12px 8px; border-bottom: 1px solid #f0f0f0; }
-        .label { font-weight: bold; color: #7f8c8d; width: 50%; }
+        .modal-header { padding: 25px; background: #f8f9fa; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; }
+        .modal-header h2 { font-size: 24px; color: var(--dark); }
+
+        /* Larger Gallery Height */
+        .modal-gallery { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; background: #fff; gap: 0; border-bottom: 1px solid #eee; }
+        .product-img { flex: 0 0 100%; scroll-snap-align: start; max-height: 500px; width: 100%; object-fit: contain; background: #fff; }
+        
+        .modal-body { padding: 30px; }
+        table { width: 100%; border-collapse: collapse; font-size: 16px; } /* Increased text size */
+        td { padding: 15px 10px; border-bottom: 1px solid #f0f0f0; }
+        .label { font-weight: bold; color: #7f8c8d; width: 45%; }
         .value { text-align: right; color: #2c3e50; font-weight: 600; }
-        .close { font-size: 32px; cursor: pointer; color: #aaa; line-height: 1; }
+        
+        .close { font-size: 40px; cursor: pointer; color: #aaa; line-height: 1; transition: color 0.2s; }
+        .close:hover { color: var(--indeco-red); }
+
+        @media (max-width: 600px) {
+            .product-img { max-height: 350px; }
+            .modal-body { padding: 15px; }
+            table { font-size: 14px; }
+        }
     </style>
 </head>
 <body>
@@ -63,7 +85,8 @@
                 <option value="ALL">All Categories</option>
                 <option value="Hammers">Hammers</option>
                 <option value="IDC">IDC</option>
-                <option value="IMG">IMG</option> <option value="IMP">IMP</option>
+                <option value="IMG">IMG</option>
+                <option value="IMP">IMP</option>
                 <option value="IRP">IRP</option>
                 <option value="IFP">IFP</option>
                 <option value="Shears">Shears</option>
@@ -87,7 +110,10 @@
             <span class="close" onclick="closeModal()">&times;</span>
         </div>
         <div id="modalImageContainer" class="modal-gallery"></div>
-        <div class="modal-body"><div id="modalTable"></div></div>
+        <div class="modal-body">
+            <div id="modalTable"></div>
+            <button onclick="closeModal()" style="margin-top:25px; width:100%; background:var(--dark); color:white; padding:15px; border-radius:10px;">CLOSE SPECIFICATIONS</button>
+        </div>
     </div>
 </div>
 
@@ -95,7 +121,7 @@
 const sources = [
     { name: 'Hammers', color: 'red', url: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ_TkMk68IfYl5ennYorexnetsQ55rU6_yXoHukqFqb1G_Ca57kDLZs1TFLh1e28Uz9QdBRz6bxIfOh/pub?gid=1327187491&single=true&output=csv" },
     { name: 'IDC', color: 'blue', url: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ_TkMk68IfYl5ennYorexnetsQ55rU6_yXoHukqFqb1G_Ca57kDLZs1TFLh1e28Uz9QdBRz6bxIfOh/pub?gid=1678506384&single=true&output=csv" },
-    { name: 'IMG', color: 'blue', url: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ_TkMk68IfYl5ennYorexnetsQ55rU6_yXoHukqFqb1G_Ca57kDLZs1TFLh1e28Uz9QdBRz6bxIfOh/pub?gid=2133361293&single=true&output=csv" }, // New Source
+    { name: 'IMG', color: 'blue', url: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ_TkMk68IfYl5ennYorexnetsQ55rU6_yXoHukqFqb1G_Ca57kDLZs1TFLh1e28Uz9QdBRz6bxIfOh/pub?gid=2133361293&single=true&output=csv" },
     { name: 'IMP', color: 'blue', url: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ_TkMk68IfYl5ennYorexnetsQ55rU6_yXoHukqFqb1G_Ca57kDLZs1TFLh1e28Uz9QdBRz6bxIfOh/pub?gid=1484509630&single=true&output=csv" },
     { name: 'IRP', color: 'green', url: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ_TkMk68IfYl5ennYorexnetsQ55rU6_yXoHukqFqb1G_Ca57kDLZs1TFLh1e28Uz9QdBRz6bxIfOh/pub?gid=1876797627&single=true&output=csv" },
     { name: 'IFP', color: 'green', url: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ_TkMk68IfYl5ennYorexnetsQ55rU6_yXoHukqFqb1G_Ca57kDLZs1TFLh1e28Uz9QdBRz6bxIfOh/pub?gid=1097656200&single=true&output=csv" },
@@ -166,7 +192,6 @@ async function performSearch() {
             </button>
         </div>
     `).join("");
-    if (globalResults.length === 0) container.innerHTML = "<p style='grid-column: 1/-1; text-align:center; color:#888;'>No matches found.</p>";
 }
 
 function openModal(index) {
