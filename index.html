@@ -113,13 +113,34 @@ async function performSearch() {
 
 function showPopup(id) {
     const item = currentResults[id];
-    document.getElementById('modalTitle').innerText = item.model;
+    const modalTitle = document.getElementById('modalTitle');
+    const modalBody = document.getElementById('modalBody');
     
-    let table = "<table>";
+    modalTitle.innerText = item.model;
+    
+    let imageHtml = "";
+    let tableHtml = "<table>";
+
+    // Loop through specs to find the image and build the table
     for (const [label, val] of Object.entries(item.specs)) {
-        table += `<tr><td class="spec-label">${label}</td><td>${val}</td></tr>`;
+        const cleanLabel = label.toLowerCase().trim();
+        
+        // Check if the row contains an image link
+        if (cleanLabel === "image" || cleanLabel === "photo" || cleanLabel === "picture") {
+            if (val.startsWith("http")) {
+                imageHtml = `<img src="${val}" style="width:100%; border-radius:8px; margin-bottom:15px; border:1px solid #ddd;" alt="${item.model}">`;
+            }
+        } else {
+            // Add regular specs to the table
+            tableHtml += `<tr><td class="spec-label">${label}</td><td>${val}</td></tr>`;
+        }
     }
-    table += "</table>";
+    tableHtml += "</table>";
+    
+    // Combine the image and the table into the popup
+    modalBody.innerHTML = imageHtml + tableHtml;
+    document.getElementById('specModal').style.display = "block";
+}
     
     document.getElementById('modalBody').innerHTML = table;
     document.getElementById('specModal').style.display = "block";
