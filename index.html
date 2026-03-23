@@ -10,66 +10,99 @@
             --indeco-orange: #e67e22; --indeco-teal: #1abc9c; --indeco-olive: #556b2f;
             --dark: #2c3e50; 
         }
-        body { font-family: -apple-system, sans-serif; background: #f4f7f6; margin: 0; padding: 20px; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background: #f4f7f6; margin: 0; padding: 20px; color: #333; }
         .container { max-width: 1000px; margin: 0 auto; }
         
+        /* Search Interface */
         .search-card { background: white; padding: 30px; border-radius: 15px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); text-align: center; margin-bottom: 30px; }
-        input { padding: 15px; width: 160px; border: 2px solid #ddd; border-radius: 8px; font-size: 18px; margin-bottom: 10px; outline: none; }
-        button#searchBtn { padding: 15px 30px; background: var(--dark); color: white; border: none; border-radius: 8px; font-size: 18px; cursor: pointer; font-weight: bold; }
-        
+        input { padding: 15px; width: 180px; border: 2px solid #ddd; border-radius: 8px; font-size: 18px; margin-bottom: 10px; outline: none; }
+        input:focus { border-color: var(--indeco-blue); }
+        button#searchBtn { padding: 15px 30px; background: var(--dark); color: white; border: none; border-radius: 8px; font-size: 18px; cursor: pointer; font-weight: bold; transition: background 0.2s; }
+        button#searchBtn:hover { background: #1a252f; }
+
+        /* Progress Bar */
+        #progressBox { display: none; width: 100%; max-width: 400px; margin: 20px auto 0 auto; }
+        .progress-bg { background: #eee; border-radius: 10px; height: 10px; overflow: hidden; }
+        #progressBar { width: 0%; height: 100%; background: var(--indeco-blue); transition: width 0.3s; }
+        #progressText { font-size: 12px; color: #666; margin-top: 8px; font-weight: 600; }
+
+        /* Results Grid */
         #results { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
-        .product-card { padding: 20px; border-radius: 12px; color: white; box-shadow: 0 4px 12px rgba(0,0,0,0.15); transition: 0.2s; text-align: center; }
-        
-        /* Brand Colors */
-        .red { background: linear-gradient(135deg, var(--indeco-red), #c0392b); }
-        .blue { background: linear-gradient(135deg, var(--indeco-blue), #2980b9); }
-        .green { background: linear-gradient(135deg, var(--indeco-green), #1e8449); }
-        .orange { background: linear-gradient(135deg, var(--indeco-orange), #d35400); }
-        .teal { background: linear-gradient(135deg, var(--indeco-teal), #16a085); }
-        .olive { background: linear-gradient(135deg, var(--indeco-olive), #3e4f1f); }
-
-        .series-label { font-size: 14px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; font-weight: bold; opacity: 0.95; }
-        
-        /* Result Button Styling */
-        .view-btn { 
-            background: white; color: #333; border: none; padding: 15px 10px; 
-            border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%; 
-            margin-top: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
+        .product-card { 
+            padding: 15px; border-radius: 12px; background: white; 
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08); text-align: center; 
+            border-top: 6px solid #ccc; display: flex; flex-direction: column;
         }
-        .btn-model { font-size: 18px; display: block; margin-bottom: 2px; }
-        .btn-weight { font-size: 13px; font-weight: normal; color: #555; }
+        
+        /* Brand Border Colors */
+        .product-card.red { border-top-color: var(--indeco-red); }
+        .product-card.blue { border-top-color: var(--indeco-blue); }
+        .product-card.green { border-top-color: var(--indeco-green); }
+        .product-card.orange { border-top-color: var(--indeco-orange); }
+        .product-card.teal { border-top-color: var(--indeco-teal); }
+        .product-card.olive { border-top-color: var(--indeco-olive); }
 
-        /* Modal / Popup */
+        .series-label { font-size: 11px; text-transform: uppercase; color: #888; margin-bottom: 10px; font-weight: bold; letter-spacing: 1px; }
+        
+        /* High-Visibility Colored Buttons */
+        .view-btn { 
+            color: white; border: none; padding: 18px 10px; 
+            border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%; 
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.15); transition: transform 0.1s, opacity 0.2s;
+        }
+        .view-btn:active { transform: scale(0.98); }
+        .btn-red { background: var(--indeco-red); }
+        .btn-blue { background: var(--indeco-blue); }
+        .btn-green { background: var(--indeco-green); }
+        .btn-orange { background: var(--indeco-orange); }
+        .btn-teal { background: var(--indeco-teal); }
+        .btn-olive { background: var(--indeco-olive); }
+
+        .btn-model { font-size: 19px; display: block; margin-bottom: 4px; }
+        .btn-weight { font-size: 13px; font-weight: normal; opacity: 0.95; }
+
+        /* Modal / Specs Popup */
         .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); overflow-y: auto; }
-        .modal-content { background: white; margin: 5% auto; border-radius: 15px; width: 90%; max-width: 600px; overflow: hidden; position: relative; color: #333; }
+        .modal-content { background: white; margin: 5% auto; border-radius: 15px; width: 92%; max-width: 600px; overflow: hidden; position: relative; color: #333; }
         .modal-header { padding: 20px; background: #f8f9fa; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; }
         .product-img { width: 100%; max-height: 350px; object-fit: contain; background: #fff; display: block; }
         .modal-body { padding: 20px; }
         table { width: 100%; border-collapse: collapse; font-size: 14px; }
         td { padding: 12px 8px; border-bottom: 1px solid #f0f0f0; }
-        .label { font-weight: bold; color: #7f8c8d; }
+        .label { font-weight: bold; color: #7f8c8d; width: 50%; }
         .value { text-align: right; color: #2c3e50; font-weight: 600; }
+        .close { font-size: 32px; cursor: pointer; color: #aaa; line-height: 1; }
     </style>
 </head>
 <body>
 
 <div class="container">
     <div class="search-card">
-    <h1 style="margin-top:0; color:#2c3e50;">Indeco Product Search</h1>
-    <p>Enter Carrier Weight (t) to find compatibility</p>
-    <input type="number" id="weightInput" step="0.1" placeholder="Ex: 15">
-    <button id="searchBtn" onclick="performSearch()">SEARCH</button>
-    
-    <div id="progressBox" style="display:none; width:100%; max-width:400px; margin: 20px auto 0 auto;">
-        <div style="background: #eee; border-radius: 10px; height: 10px; overflow: hidden;">
-            <div id="progressBar" style="width: 0%; height: 100%; background: var(--indeco-blue); transition: width 0.3s;"></div>
+        <h1 style="margin-top:0; color:var(--dark);">Indeco Product Search</h1>
+        <p style="color:#666;">Enter Carrier Weight (t) to find compatibility</p>
+        <input type="number" id="weightInput" step="0.1" placeholder="Ex: 22.5">
+        <button id="searchBtn" onclick="performSearch()">SEARCH</button>
+        
+        <div id="progressBox">
+            <div class="progress-bg"><div id="progressBar"></div></div>
+            <p id="progressText">Initializing...</p>
         </div>
-        <p id="progressText" style="font-size: 12px; color: #666; margin-top: 5px;">Analyzing catalogs...</p>
     </div>
+    
+    <div id="results"></div>
 </div>
 
-<div id="results"></div>
+<div id="specModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 id="modalTitle" style="margin:0"></h2>
+            <span class="close" onclick="closeModal()">&times;</span>
+        </div>
+        <div id="modalImageContainer"></div>
+        <div class="modal-body"><div id="modalTable"></div></div>
+    </div>
+</div>
 
 <script>
 const sources = [
@@ -94,13 +127,14 @@ async function performSearch() {
 
     if (isNaN(searchWeight)) return;
 
-    // Reset UI for new search
+    // UI Reset
     container.innerHTML = "";
     globalResults = [];
     progressBox.style.display = "block";
     progressBar.style.width = "0%";
-    let completedSheets = 0;
+    let completedCount = 0;
 
+    // Parallel Fetching Engine
     const fetchPromises = sources.map(async (source) => {
         try {
             const response = await fetch(source.url);
@@ -137,42 +171,36 @@ async function performSearch() {
                 }
             }
 
-            // Update Progress Bar
-            completedSheets++;
-            const percent = (completedSheets / sources.length) * 100;
+            completedCount++;
+            const percent = (completedCount / sources.length) * 100;
             progressBar.style.width = percent + "%";
             progressText.innerText = `Checked ${source.name}...`;
 
             return matches;
         } catch (e) {
             console.error(`Error in ${source.name}:`, e);
-            completedSheets++;
+            completedCount++;
             return [];
         }
     });
 
-    // Wait for all fetches to finish in parallel
     const allResults = await Promise.all(fetchPromises);
-    
-    // Flatten and display results
-    const flatResults = allResults.flat();
-    globalResults = flatResults;
+    globalResults = allResults.flat();
 
-    let finalHTML = flatResults.map((item, index) => `
+    const finalHTML = globalResults.map((item, index) => `
         <div class="product-card ${item.color}">
             <div class="series-label">${item.type}</div>
-            <button class="view-btn" onclick="openModal(${index})">
+            <button class="view-btn btn-${item.color}" onclick="openModal(${index})">
                 <span class="btn-model">${item.modelName}</span>
                 <span class="btn-weight">${item.weightDisplay} t</span>
             </button>
         </div>
     `).join("");
 
-    // Hide progress bar and show results
     setTimeout(() => {
         progressBox.style.display = "none";
-        container.innerHTML = finalHTML || "<p style='grid-column: 1/-1; text-align:center'>No compatible equipment found.</p>";
-    }, 400); // Slight delay for smooth visual transition
+        container.innerHTML = finalHTML || "<p style='grid-column: 1/-1; text-align:center; padding: 40px;'>No compatible equipment found for this weight.</p>";
+    }, 400);
 }
 
 function openModal(index) {
@@ -184,7 +212,7 @@ function openModal(index) {
     for (const [key, value] of Object.entries(item.specs)) {
         const lowerKey = key.toLowerCase();
         if ((lowerKey.includes("image") || lowerKey.includes("photo")) && value.startsWith("http")) {
-            imgHTML = `<img src="${value}" class="product-img">`;
+            imgHTML = `<img src="${value}" class="product-img" alt="${item.modelName}">`;
         } else {
             tableHTML += `<tr><td class="label">${key}</td><td class="value">${value}</td></tr>`;
         }
@@ -195,9 +223,8 @@ function openModal(index) {
 }
 
 function closeModal() { document.getElementById('specModal').style.display = "none"; }
-    window.onclick = function(e) { if (e.target.className === 'modal') closeModal(); }
+window.onclick = function(e) { if (e.target.className === 'modal') closeModal(); }
 </script>
 
-</script>
 </body>
 </html>
