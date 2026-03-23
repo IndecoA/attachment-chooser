@@ -2,8 +2,14 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Indeco Australia | Attachment Compatibility</title>
+    
+    <link rel="apple-touch-icon" href="http://www.indeco.com.au/wp-content/uploads/2026/03/50th.png">
+    <link rel="icon" type="image/png" href="http://www.indeco.com.au/wp-content/uploads/2026/03/50th.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
     <style>
         :root { 
             --indeco-red: #e74c3c; --indeco-blue: #3498db; --indeco-green: #27ae60; 
@@ -13,70 +19,31 @@
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f4f7f6; margin: 0; padding: 20px; color: #333; }
         .container { max-width: 1000px; margin: 0 auto; }
         
-        /* UPDATED: Search Card Styles */
-        .search-card { 
-            background: white; 
-            padding: 20px 30px 30px 30px; /* Reduced top padding for logo */
-            border-radius: 15px; 
-            box-shadow: 0 4px 20px rgba(0,0,0,0.1); 
-            text-align: center; 
-            margin-bottom: 30px; 
-        }
-
-        /* NEW: Logo Styles */
-        .indeco-logo {
-            width: 100%;
-            max-width: 320px; /* Adjust size as needed */
-            height: auto;
-            margin: 0 auto 20px auto; /* Centers logo and adds space below */
-            display: block;
-        }
+        .search-card { background: white; padding: 20px 30px 30px 30px; border-radius: 15px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); text-align: center; margin-bottom: 30px; }
+        .indeco-logo { width: 100%; max-width: 320px; height: auto; margin: 0 auto 20px auto; display: block; }
 
         .input-group { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-bottom: 20px; }
-        
         input, select { padding: 15px; border: 2px solid #ddd; border-radius: 8px; font-size: 16px; outline: none; transition: border-color 0.2s; }
         input { width: 140px; }
         select { background: white; cursor: pointer; min-width: 180px; }
-        input:focus, select:focus { border-color: var(--indeco-blue); }
-
-        /* Button Actions */
+        
         .action-group { display: flex; gap: 10px; justify-content: center; max-width: 500px; margin: 0 auto; }
         button { padding: 15px 25px; border: none; border-radius: 8px; font-size: 16px; cursor: pointer; font-weight: bold; transition: opacity 0.2s; }
-        
-        #searchBtn { background: var(--dark); color: white; flex: 2; }
-        #resetBtn { background: var(--gray); color: white; flex: 1; }
-        button:hover { opacity: 0.9; }
 
-        /* Loader */
-        #progressBox { display: none; text-align: center; padding: 60px 20px; grid-column: 1 / -1; }
-        #progressText { font-weight: bold; color: #888; letter-spacing: 2px; text-transform: uppercase; font-size: 14px; }
-
-        /* Results Grid */
         #results { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
         .product-card { padding: 15px; border-radius: 12px; background: white; box-shadow: 0 4px 12px rgba(0,0,0,0.08); text-align: center; border-top: 6px solid #ccc; display: flex; flex-direction: column; }
-        
-        .product-card.red { border-top-color: var(--indeco-red); }
-        .product-card.blue { border-top-color: var(--indeco-blue); }
-        .product-card.green { border-top-color: var(--indeco-green); }
-        .product-card.orange { border-top-color: var(--indeco-orange); }
-        .product-card.teal { border-top-color: var(--indeco-teal); }
-        .product-card.olive { border-top-color: var(--indeco-olive); }
+        .series-label { font-size: 11px; text-transform: uppercase; color: #888; margin-bottom: 10px; font-weight: bold; }
+        .view-btn { color: white; border: none; padding: 18px 10px; border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; }
 
-        .series-label { font-size: 11px; text-transform: uppercase; color: #888; margin-bottom: 10px; font-weight: bold; letter-spacing: 1px; }
-        .view-btn { color: white; border: none; padding: 18px 10px; border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: 0 3px 6px rgba(0,0,0,0.15); }
-        
-        .btn-red { background: var(--indeco-red); }
-        .btn-blue { background: var(--indeco-blue); }
-        .btn-green { background: var(--indeco-green); }
-        .btn-orange { background: var(--indeco-orange); }
-        .btn-teal { background: var(--indeco-teal); }
-        .btn-olive { background: var(--indeco-olive); }
+        /* GALLERY STYLES */
+        .modal-gallery { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; background: #fff; gap: 10px; padding: 10px; border-bottom: 1px solid #eee; }
+        .product-img { flex: 0 0 100%; scroll-snap-align: start; max-height: 350px; object-fit: contain; }
+        .modal-gallery::-webkit-scrollbar { height: 6px; }
+        .modal-gallery::-webkit-scrollbar-thumb { background: #ccc; border-radius: 10px; }
 
-        /* Modal */
         .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); overflow-y: auto; }
         .modal-content { background: white; margin: 5% auto; border-radius: 15px; width: 92%; max-width: 600px; overflow: hidden; position: relative; }
         .modal-header { padding: 20px; background: #f8f9fa; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; }
-        .product-img { width: 100%; max-height: 350px; object-fit: contain; background: #fff; display: block; }
         .modal-body { padding: 20px; }
         table { width: 100%; border-collapse: collapse; font-size: 14px; }
         td { padding: 12px 8px; border-bottom: 1px solid #f0f0f0; }
@@ -89,16 +56,14 @@
 
 <div class="container">
     <div class="search-card">
-        <img src="http://www.indeco.com.au/wp-content/uploads/2026/03/50th.png" class="indeco-logo" alt="Indeco Australia 50th Anniversary Logo">
-        
+        <img src="http://www.indeco.com.au/wp-content/uploads/2026/03/50th.png" class="indeco-logo" alt="Indeco Logo">
         <p style="color:#666; margin-bottom: 20px;">Enter Carrier Weight (t) to find compatible attachments</p>
-        
         <div class="input-group">
             <select id="categorySelect">
                 <option value="ALL">All Categories</option>
                 <option value="Hammers">Hammers</option>
                 <option value="IDC">IDC</option>
-                <option value="IMP">IMP</option>
+                <option value="IMG">IMG</option> <option value="IMP">IMP</option>
                 <option value="IRP">IRP</option>
                 <option value="IFP">IFP</option>
                 <option value="Shears">Shears</option>
@@ -107,18 +72,12 @@
             </select>
             <input type="number" id="weightInput" step="0.1" placeholder="Weight (t)" onkeydown="if(event.key === 'Enter') performSearch()">
         </div>
-
         <div class="action-group">
-            <button id="searchBtn" onclick="performSearch()">SEARCH</button>
-            <button id="resetBtn" onclick="resetSearch()">RESET</button>
+            <button id="searchBtn" onclick="performSearch()" style="background: var(--dark); color: white; flex: 2;">SEARCH</button>
+            <button id="resetBtn" onclick="resetSearch()" style="background: var(--gray); color: white; flex: 1;">RESET</button>
         </div>
     </div>
-
-    <div id="results">
-        <div id="progressBox">
-            <div id="progressText">Analyzing Compatibility...</div>
-        </div>
-    </div>
+    <div id="results"></div>
 </div>
 
 <div id="specModal" class="modal">
@@ -127,7 +86,7 @@
             <h2 id="modalTitle" style="margin:0"></h2>
             <span class="close" onclick="closeModal()">&times;</span>
         </div>
-        <div id="modalImageContainer"></div>
+        <div id="modalImageContainer" class="modal-gallery"></div>
         <div class="modal-body"><div id="modalTable"></div></div>
     </div>
 </div>
@@ -136,6 +95,7 @@
 const sources = [
     { name: 'Hammers', color: 'red', url: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ_TkMk68IfYl5ennYorexnetsQ55rU6_yXoHukqFqb1G_Ca57kDLZs1TFLh1e28Uz9QdBRz6bxIfOh/pub?gid=1327187491&single=true&output=csv" },
     { name: 'IDC', color: 'blue', url: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ_TkMk68IfYl5ennYorexnetsQ55rU6_yXoHukqFqb1G_Ca57kDLZs1TFLh1e28Uz9QdBRz6bxIfOh/pub?gid=1678506384&single=true&output=csv" },
+    { name: 'IMG', color: 'blue', url: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ_TkMk68IfYl5ennYorexnetsQ55rU6_yXoHukqFqb1G_Ca57kDLZs1TFLh1e28Uz9QdBRz6bxIfOh/pub?gid=2133361293&single=true&output=csv" }, // New Source
     { name: 'IMP', color: 'blue', url: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ_TkMk68IfYl5ennYorexnetsQ55rU6_yXoHukqFqb1G_Ca57kDLZs1TFLh1e28Uz9QdBRz6bxIfOh/pub?gid=1484509630&single=true&output=csv" },
     { name: 'IRP', color: 'green', url: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ_TkMk68IfYl5ennYorexnetsQ55rU6_yXoHukqFqb1G_Ca57kDLZs1TFLh1e28Uz9QdBRz6bxIfOh/pub?gid=1876797627&single=true&output=csv" },
     { name: 'IFP', color: 'green', url: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ_TkMk68IfYl5ennYorexnetsQ55rU6_yXoHukqFqb1G_Ca57kDLZs1TFLh1e28Uz9QdBRz6bxIfOh/pub?gid=1097656200&single=true&output=csv" },
@@ -148,29 +108,17 @@ let globalResults = [];
 
 function resetSearch() {
     document.getElementById('weightInput').value = "";
-    document.getElementById('categorySelect').value = "ALL";
-    document.getElementById('results').innerHTML = `
-        <div id="progressBox">
-            <div id="progressText">Analyzing Compatibility...</div>
-        </div>
-    `;
+    document.getElementById('results').innerHTML = "";
     globalResults = [];
 }
 
 async function performSearch() {
     const selectedCategory = document.getElementById('categorySelect').value;
-    const inputField = document.getElementById('weightInput');
-    const searchWeight = parseFloat(inputField.value);
+    const searchWeight = parseFloat(document.getElementById('weightInput').value);
     const container = document.getElementById('results');
-    const progressBox = document.getElementById('progressBox');
-
     if (isNaN(searchWeight)) return;
 
-    inputField.blur();
-    container.innerHTML = "";
-    container.appendChild(progressBox); 
-    progressBox.style.display = "block";
-
+    container.innerHTML = "<p style='grid-column: 1/-1; text-align:center;'>Searching...</p>";
     globalResults = [];
     const sourcesToFetch = selectedCategory === "ALL" ? sources : sources.filter(s => s.name === selectedCategory);
 
@@ -178,17 +126,13 @@ async function performSearch() {
         try {
             const response = await fetch(source.url);
             const csvText = await response.text();
-            const rows = csvText.split('\n').map(row => row.split(',')).filter(r => r.length > 1);
+            const rows = csvText.split('\n').map(row => row.split(','));
             const headers = rows[0].map(h => h.trim());
-
             let matches = [];
             for (let col = 1; col < headers.length; col++) {
-                const modelName = headers[col]?.trim();
+                const modelName = headers[col];
                 if (!modelName) continue;
-
-                let specs = {};
-                let minW = 0, maxW = 0, weightDisplay = "";
-
+                let specs = {}, minW = 0, maxW = 0, weightDisplay = "";
                 rows.forEach(row => {
                     const label = row[0]?.trim();
                     const val = row[col]?.trim();
@@ -198,12 +142,10 @@ async function performSearch() {
                             weightDisplay = val;
                             const clean = val.replace(/[^0-9.\-]/g, '');
                             const range = clean.split('-').map(v => parseFloat(v));
-                            minW = range[0];
-                            maxW = range[1] || range[0];
+                            minW = range[0]; maxW = range[1] || range[0];
                         }
                     }
                 });
-
                 if (searchWeight >= minW && searchWeight <= maxW) {
                     matches.push({ modelName, specs, color: source.color, type: source.name, weightDisplay });
                 }
@@ -212,21 +154,19 @@ async function performSearch() {
         } catch (e) { return []; }
     });
 
-    const allResults = await Promise.all(fetchPromises);
-    globalResults = allResults.flat();
+    const resultsArray = await Promise.all(fetchPromises);
+    globalResults = resultsArray.flat();
 
-    const finalHTML = globalResults.map((item, index) => `
+    container.innerHTML = globalResults.map((item, index) => `
         <div class="product-card ${item.color}">
             <div class="series-label">${item.type}</div>
-            <button class="view-btn btn-${item.color}" onclick="openModal(${index})">
-                <span style="font-size: 19px; display: block; margin-bottom: 4px;">${item.modelName}</span>
-                <span style="font-size: 13px; font-weight: normal; opacity: 0.95;">${item.weightDisplay} t</span>
+            <button class="view-btn" style="background:var(--indeco-${item.color})" onclick="openModal(${index})">
+                <span style="font-size: 19px;">${item.modelName}</span>
+                <span style="font-size: 13px; font-weight: normal;">${item.weightDisplay} t</span>
             </button>
         </div>
     `).join("");
-
-    progressBox.style.display = "none";
-    container.innerHTML = finalHTML || `<p style='grid-column: 1/-1; text-align:center; padding: 40px; color:#888;'>No attachments found for ${searchWeight}t.</p>`;
+    if (globalResults.length === 0) container.innerHTML = "<p style='grid-column: 1/-1; text-align:center; color:#888;'>No matches found.</p>";
 }
 
 function openModal(index) {
@@ -234,15 +174,21 @@ function openModal(index) {
     document.getElementById('modalTitle').innerText = item.modelName;
     let tableHTML = "<table>";
     let imgHTML = "";
+    let foundImages = 0;
+
     for (const [key, value] of Object.entries(item.specs)) {
         const lowerKey = key.toLowerCase();
-        if ((lowerKey.includes("image") || lowerKey.includes("photo")) && value.startsWith("http")) {
-            imgHTML = `<img src="${value}" class="product-img">`;
+        if ((lowerKey.includes("photo") || lowerKey.includes("image") || lowerKey.includes("diagram")) && value.startsWith("http")) {
+            imgHTML += `<img src="${value}" class="product-img" alt="${key}">`;
+            foundImages++;
         } else {
             tableHTML += `<tr><td class="label">${key}</td><td class="value">${value}</td></tr>`;
         }
     }
-    document.getElementById('modalImageContainer').innerHTML = imgHTML;
+
+    const imgContainer = document.getElementById('modalImageContainer');
+    imgContainer.innerHTML = imgHTML;
+    imgContainer.style.display = (foundImages > 0) ? "flex" : "none";
     document.getElementById('modalTable').innerHTML = tableHTML + "</table>";
     document.getElementById('specModal').style.display = "block";
 }
