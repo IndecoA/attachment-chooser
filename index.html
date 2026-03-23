@@ -1,16 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
-    
-    <head>
+<head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Indeco Australia | Attachment Compatibility</title>
-    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Indeco | Compatibility Tool</title>
+
     <link rel="apple-touch-icon" href="http://www.indeco.com.au/wp-content/uploads/2026/03/50th.png">
     <link rel="icon" type="image/png" href="http://www.indeco.com.au/wp-content/uploads/2026/03/50th.png">
-    
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Indeco Tool">
 
     <style>
         :root { 
@@ -18,53 +17,37 @@
             --indeco-orange: #e67e22; --indeco-teal: #1abc9c; --indeco-olive: #556b2f;
             --dark: #2c3e50; --gray: #95a5a6;
         }
-    
-
-        }
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f4f7f6; margin: 0; padding: 20px; color: #333; }
-        .container { max-width: 1000px; margin: 0 auto; }
         
-        /* UPDATED: Search Card Styles */
-        .search-card { 
-            background: white; 
-            padding: 20px 30px 30px 30px; /* Reduced top padding for logo */
-            border-radius: 15px; 
-            box-shadow: 0 4px 20px rgba(0,0,0,0.1); 
-            text-align: center; 
-            margin-bottom: 30px; 
-        }
-
-        /* NEW: Logo Styles */
-        .indeco-logo {
-            width: 100%;
-            max-width: 320px; /* Adjust size as needed */
-            height: auto;
-            margin: 0 auto 20px auto; /* Centers logo and adds space below */
-            display: block;
-        }
-
-        .input-group { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-bottom: 20px; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f4f7f6; margin: 0; padding: 15px; color: #333; -webkit-tap-highlight-color: transparent; }
+        .container { max-width: 800px; margin: 0 auto; }
         
-        input, select { padding: 15px; border: 2px solid #ddd; border-radius: 8px; font-size: 16px; outline: none; transition: border-color 0.2s; }
-        input { width: 140px; }
-        select { background: white; cursor: pointer; min-width: 180px; }
+        /* Main Search Card */
+        .search-card { background: white; padding: 25px; border-radius: 15px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); text-align: center; margin-bottom: 25px; }
+        
+        .main-logo { width: 100%; max-width: 280px; height: auto; margin: 0 auto 20px auto; display: block; }
+        
+        .input-group { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-bottom: 20px; }
+        
+        input, select { padding: 14px; border: 2px solid #ddd; border-radius: 8px; font-size: 16px; outline: none; transition: border-color 0.2s; }
+        input { width: 120px; }
+        select { background: white; cursor: pointer; min-width: 160px; }
         input:focus, select:focus { border-color: var(--indeco-blue); }
 
-        /* Button Actions */
-        .action-group { display: flex; gap: 10px; justify-content: center; max-width: 500px; margin: 0 auto; }
-        button { padding: 15px 25px; border: none; border-radius: 8px; font-size: 16px; cursor: pointer; font-weight: bold; transition: opacity 0.2s; }
+        /* Buttons */
+        .action-group { display: flex; gap: 10px; justify-content: center; max-width: 400px; margin: 0 auto; }
+        button { padding: 14px 20px; border: none; border-radius: 8px; font-size: 16px; cursor: pointer; font-weight: bold; transition: opacity 0.2s; }
         
         #searchBtn { background: var(--dark); color: white; flex: 2; }
         #resetBtn { background: var(--gray); color: white; flex: 1; }
-        button:hover { opacity: 0.9; }
+        button:active { opacity: 0.7; }
 
         /* Loader */
-        #progressBox { display: none; text-align: center; padding: 60px 20px; grid-column: 1 / -1; }
-        #progressText { font-weight: bold; color: #888; letter-spacing: 2px; text-transform: uppercase; font-size: 14px; }
+        #progressBox { display: none; text-align: center; padding: 50px 20px; grid-column: 1 / -1; }
+        #progressText { font-weight: bold; color: #aaa; letter-spacing: 1px; text-transform: uppercase; font-size: 13px; }
 
         /* Results Grid */
-        #results { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
-        .product-card { padding: 15px; border-radius: 12px; background: white; box-shadow: 0 4px 12px rgba(0,0,0,0.08); text-align: center; border-top: 6px solid #ccc; display: flex; flex-direction: column; }
+        #results { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 15px; }
+        .product-card { padding: 12px; border-radius: 12px; background: white; box-shadow: 0 3px 10px rgba(0,0,0,0.06); text-align: center; border-top: 5px solid #ccc; display: flex; flex-direction: column; }
         
         .product-card.red { border-top-color: var(--indeco-red); }
         .product-card.blue { border-top-color: var(--indeco-blue); }
@@ -73,8 +56,8 @@
         .product-card.teal { border-top-color: var(--indeco-teal); }
         .product-card.olive { border-top-color: var(--indeco-olive); }
 
-        .series-label { font-size: 11px; text-transform: uppercase; color: #888; margin-bottom: 10px; font-weight: bold; letter-spacing: 1px; }
-        .view-btn { color: white; border: none; padding: 18px 10px; border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: 0 3px 6px rgba(0,0,0,0.15); }
+        .series-label { font-size: 10px; text-transform: uppercase; color: #999; margin-bottom: 8px; font-weight: bold; }
+        .view-btn { color: white; border: none; padding: 15px 8px; border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%; display: flex; flex-direction: column; }
         
         .btn-red { background: var(--indeco-red); }
         .btn-blue { background: var(--indeco-blue); }
@@ -83,26 +66,28 @@
         .btn-teal { background: var(--indeco-teal); }
         .btn-olive { background: var(--indeco-olive); }
 
-        /* Modal */
-        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); overflow-y: auto; }
-        .modal-content { background: white; margin: 5% auto; border-radius: 15px; width: 92%; max-width: 600px; overflow: hidden; position: relative; }
-        .modal-header { padding: 20px; background: #f8f9fa; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; }
-        .product-img { width: 100%; max-height: 350px; object-fit: contain; background: #fff; display: block; }
-        .modal-body { padding: 20px; }
+        /* Modal Settings */
+        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); overflow-y: auto; }
+        .modal-content { background: white; margin: 10% auto; border-radius: 15px; width: 95%; max-width: 500px; overflow: hidden; position: relative; }
+        .modal-header { padding: 15px; background: #f8f9fa; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; }
+        .product-img { width: 100%; max-height: 300px; object-fit: contain; background: #fff; display: block; }
+        .modal-body { padding: 15px; }
         table { width: 100%; border-collapse: collapse; font-size: 14px; }
-        td { padding: 12px 8px; border-bottom: 1px solid #f0f0f0; }
+        td { padding: 10px 5px; border-bottom: 1px solid #f0f0f0; }
         .label { font-weight: bold; color: #7f8c8d; width: 50%; }
         .value { text-align: right; color: #2c3e50; font-weight: 600; }
-        .close { font-size: 32px; cursor: pointer; color: #aaa; line-height: 1; }
+        .close { font-size: 30px; cursor: pointer; color: #aaa; }
+
+        @media (max-width: 480px) {
+            #results { grid-template-columns: 1fr 1fr; }
+        }
     </style>
 </head>
 <body>
 
 <div class="container">
     <div class="search-card">
-        <img src="http://www.indeco.com.au/wp-content/uploads/2026/03/50th.png" class="indeco-logo" alt="Indeco Australia 50th Anniversary Logo">
-        
-        <p style="color:#666; margin-bottom: 20px;">Enter Carrier Weight (t) to find compatible attachments</p>
+        <img src="http://www.indeco.com.au/wp-content/uploads/2026/03/50th.png" class="main-logo" alt="Indeco 50th Anniversary">
         
         <div class="input-group">
             <select id="categorySelect">
@@ -135,7 +120,7 @@
 <div id="specModal" class="modal">
     <div class="modal-content">
         <div class="modal-header">
-            <h2 id="modalTitle" style="margin:0"></h2>
+            <h2 id="modalTitle" style="margin:0; font-size: 1.2rem;"></h2>
             <span class="close" onclick="closeModal()">&times;</span>
         </div>
         <div id="modalImageContainer"></div>
@@ -160,11 +145,7 @@ let globalResults = [];
 function resetSearch() {
     document.getElementById('weightInput').value = "";
     document.getElementById('categorySelect').value = "ALL";
-    document.getElementById('results').innerHTML = `
-        <div id="progressBox">
-            <div id="progressText">Analyzing Compatibility...</div>
-        </div>
-    `;
+    document.getElementById('results').innerHTML = `<div id="progressBox"><div id="progressText">Analyzing Compatibility...</div></div>`;
     globalResults = [];
 }
 
@@ -230,14 +211,14 @@ async function performSearch() {
         <div class="product-card ${item.color}">
             <div class="series-label">${item.type}</div>
             <button class="view-btn btn-${item.color}" onclick="openModal(${index})">
-                <span style="font-size: 19px; display: block; margin-bottom: 4px;">${item.modelName}</span>
-                <span style="font-size: 13px; font-weight: normal; opacity: 0.95;">${item.weightDisplay} t</span>
+                <span style="font-size: 17px; display: block; margin-bottom: 3px;">${item.modelName}</span>
+                <span style="font-size: 11px; font-weight: normal; opacity: 0.9;">${item.weightDisplay} t</span>
             </button>
         </div>
     `).join("");
 
     progressBox.style.display = "none";
-    container.innerHTML = finalHTML || `<p style='grid-column: 1/-1; text-align:center; padding: 40px; color:#888;'>No attachments found for ${searchWeight}t.</p>`;
+    container.innerHTML = finalHTML || `<p style='grid-column: 1/-1; text-align:center; padding: 40px; color:#999;'>No matches found for ${searchWeight}t.</p>`;
 }
 
 function openModal(index) {
