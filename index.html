@@ -8,45 +8,41 @@
         :root { 
             --indeco-red: #e74c3c; 
             --indeco-blue: #3498db; 
-            --indeco-teal: #1abc9c; 
+            --indeco-green: #27ae60; 
             --indeco-orange: #e67e22;
+            --indeco-teal: #1abc9c;
+            --indeco-olive: #808000;
             --dark: #2c3e50; 
         }
-        body { font-family: -apple-system, sans-serif; background: #f0f2f5; margin: 0; padding: 20px; color: #333; }
+        body { font-family: -apple-system, sans-serif; background: #f4f7f6; margin: 0; padding: 20px; }
         .container { max-width: 1000px; margin: 0 auto; }
+        .search-card { background: white; padding: 30px; border-radius: 15px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); text-align: center; margin-bottom: 30px; }
+        input { padding: 15px; width: 160px; border: 2px solid #ddd; border-radius: 8px; font-size: 18px; }
+        button#searchBtn { padding: 15px 30px; background: var(--dark); color: white; border: none; border-radius: 8px; font-size: 18px; cursor: pointer; font-weight: bold; }
         
-        /* Search Bar */
-        .search-card { background: white; padding: 30px; border-radius: 15px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); text-align: center; margin-bottom: 30px; }
-        input[type="number"] { padding: 15px; width: 160px; border: 2px solid #ddd; border-radius: 8px; font-size: 18px; margin-bottom: 10px; }
-        button#searchBtn { padding: 15px 30px; background: var(--dark); color: white; border: none; border-radius: 8px; font-size: 18px; cursor: pointer; font-weight: bold; width: 100%; max-width: 200px; }
-        
-        /* Results Grid */
         #results { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
         .product-card { padding: 20px; border-radius: 12px; color: white; box-shadow: 0 4px 12px rgba(0,0,0,0.15); transition: 0.2s; text-align: center; }
-        .product-card:hover { transform: translateY(-3px); }
         
-        /* Specific Branding Colors */
+        /* Brand Color Classes */
         .red { background: linear-gradient(135deg, var(--indeco-red), #c0392b); }
         .blue { background: linear-gradient(135deg, var(--indeco-blue), #2980b9); }
-        .teal { background: linear-gradient(135deg, var(--indeco-teal), #16a085); }
+        .green { background: linear-gradient(135deg, var(--indeco-green), #1e8449); }
         .orange { background: linear-gradient(135deg, var(--indeco-orange), #d35400); }
+        .teal { background: linear-gradient(135deg, var(--indeco-teal), #16a085); }
+        .olive { background: linear-gradient(135deg, var(--indeco-olive), #556b2f); }
 
         .product-card h3 { margin: 0; font-size: 22px; border-bottom: 1px solid rgba(255,255,255,0.2); padding-bottom: 5px; }
-        .product-card p { margin: 10px 0 5px 0; font-weight: bold; opacity: 0.9; }
         .view-btn { background: white; color: #333; border: none; padding: 12px; border-radius: 6px; cursor: pointer; font-weight: bold; width: 100%; margin-top: 15px; }
 
         /* Modal / Popup */
         .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); overflow-y: auto; }
         .modal-content { background: white; margin: 5% auto; border-radius: 15px; width: 90%; max-width: 600px; overflow: hidden; position: relative; }
-        .modal-header { padding: 20px; background: #f8f9fa; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; }
-        .close { font-size: 30px; cursor: pointer; color: #999; line-height: 1; }
-        .product-img { width: 100%; max-height: 350px; object-fit: contain; background: #fff; display: block; border-bottom: 1px solid #eee; }
+        .modal-header { padding: 20px; background: #f8f9fa; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; }
+        .product-img { width: 100%; max-height: 350px; object-fit: contain; background: #fff; display: block; }
         .modal-body { padding: 20px; }
-        
-        /* Table Styles */
         table { width: 100%; border-collapse: collapse; font-size: 14px; }
         td { padding: 12px 8px; border-bottom: 1px solid #f0f0f0; }
-        .label { font-weight: bold; color: #7f8c8d; width: 50%; }
+        .label { font-weight: bold; color: #7f8c8d; }
         .value { text-align: right; color: #2c3e50; font-weight: 600; }
     </style>
 </head>
@@ -55,8 +51,7 @@
 <div class="container">
     <div class="search-card">
         <h1>Indeco Product Search</h1>
-        <p>Enter Excavator/Carrier Weight to find compatible attachments</p>
-        <input type="number" id="weightInput" step="0.1" placeholder="Weight (t)">
+        <input type="number" id="weightInput" step="0.1" placeholder="Carrier Weight (t)">
         <button id="searchBtn" onclick="performSearch()">SEARCH</button>
     </div>
     <div id="results"></div>
@@ -66,7 +61,7 @@
     <div class="modal-content">
         <div class="modal-header">
             <h2 id="modalTitle" style="margin:0"></h2>
-            <span class="close" onclick="closeModal()">&times;</span>
+            <span style="font-size:30px; cursor:pointer;" onclick="closeModal()">&times;</span>
         </div>
         <div id="modalImageContainer"></div>
         <div class="modal-body"><div id="modalTable"></div></div>
@@ -75,12 +70,12 @@
 
 <script>
 const sources = [
-    { name: 'Hammers', color: 'red', url: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ_TkMk68IfYl5ennYorexnetsQ55rU6_yXoHukqFqb1G_Ca57kDLZs1TFLh1e28Uz9QdBRz6bxIfOh/pub?gid=1327187491&single=true&output=csv" },
-    { name: 'Crushers', color: 'blue', url: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ_TkMk68IfYl5ennYorexnetsQ55rU6_yXoHukqFqb1G_Ca57kDLZs1TFLh1e28Uz9QdBRz6bxIfOh/pub?gid=1097656200&single=true&output=csv" },
-    { name: 'Pulverizers', color: 'blue', url: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ_TkMk68IfYl5ennYorexnetsQ55rU6_yXoHukqFqb1G_Ca57kDLZs1TFLh1e28Uz9QdBRz6bxIfOh/pub?gid=1876797627&single=true&output=csv" },
+    { name: 'Hammers', color: 'red', url: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ_TkMk68IfYl5ennYorexnetsQ55rU6_yXoHukqFqb1G_Ca57kDLZs1TFLh1e28Uz9QdBRz6bxIfOh/pub?gid=311765735&single=true&output=csv" },
+    { name: 'IDC & IMP', color: 'blue', url: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ_TkMk68IfYl5ennYorexnetsQ55rU6_yXoHukqFqb1G_Ca57kDLZs1TFLh1e28Uz9QdBRz6bxIfOh/pub?gid=1097656200&single=true&output=csv" },
+    { name: 'IRP & IFP', color: 'green', url: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ_TkMk68IfYl5ennYorexnetsQ55rU6_yXoHukqFqb1G_Ca57kDLZs1TFLh1e28Uz9QdBRz6bxIfOh/pub?gid=1876797627&single=true&output=csv" },
     { name: 'Shears', color: 'teal', url: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ_TkMk68IfYl5ennYorexnetsQ55rU6_yXoHukqFqb1G_Ca57kDLZs1TFLh1e28Uz9QdBRz6bxIfOh/pub?gid=81790827&single=true&output=csv" },
-    { name: 'Compactors', color: 'orange', url: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ_TkMk68IfYl5ennYorexnetsQ55rU6_yXoHukqFqb1G_Ca57kDLZs1TFLh1e28Uz9QdBRz6bxIfOh/pub?gid=159874260&single=true&output=csv" },
-    { name: 'Mulchers', color: 'teal', url: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ_TkMk68IfYl5ennYorexnetsQ55rU6_yXoHukqFqb1G_Ca57kDLZs1TFLh1e28Uz9QdBRz6bxIfOh/pub?gid=1484509630&single=true&output=csv" }
+    { name: 'Compaction Plates', color: 'orange', url: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ_TkMk68IfYl5ennYorexnetsQ55rU6_yXoHukqFqb1G_Ca57kDLZs1TFLh1e28Uz9QdBRz6bxIfOh/pub?gid=159874260&single=true&output=csv" },
+    { name: 'IMP Multi-purpose', color: 'olive', url: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ_TkMk68IfYl5ennYorexnetsQ55rU6_yXoHukqFqb1G_Ca57kDLZs1TFLh1e28Uz9QdBRz6bxIfOh/pub?gid=1484509630&single=true&output=csv" }
 ];
 
 let globalResults = [];
@@ -90,7 +85,7 @@ async function performSearch() {
     const container = document.getElementById('results');
     if (isNaN(searchWeight)) return;
 
-    container.innerHTML = "<p style='grid-column: 1/-1; text-align:center'>Analyzing all series...</p>";
+    container.innerHTML = "<p style='grid-column: 1/-1; text-align:center'>Analyzing technical data...</p>";
     globalResults = [];
     let resultsHTML = "";
 
@@ -130,14 +125,14 @@ async function performSearch() {
                         <div class="product-card ${source.color}">
                             <h3>${modelName}</h3>
                             <p>${source.name}</p>
-                            <div style="font-size: 14px; opacity: 0.9;">Carrier: ${weightDisplay} t</div>
+                            <p style="font-size:14px">Carrier: ${weightDisplay} t</p>
                             <button class="view-btn" onclick="openModal(${id})">VIEW SPECS</button>
                         </div>`;
                 }
             }
         } catch (e) { console.error("Error:", e); }
     }
-    container.innerHTML = resultsHTML || "<p style='grid-column: 1/-1; text-align:center'>No matches for this weight.</p>";
+    container.innerHTML = resultsHTML || "<p style='grid-column: 1/-1; text-align:center'>No compatible equipment found.</p>";
 }
 
 function openModal(index) {
@@ -149,7 +144,7 @@ function openModal(index) {
     for (const [key, value] of Object.entries(item.specs)) {
         const lowerKey = key.toLowerCase();
         if ((lowerKey.includes("picture") || lowerKey.includes("photo")) && value.startsWith("http")) {
-            imgHTML = `<img src="${value}" class="product-img" alt="${item.modelName}">`;
+            imgHTML = `<img src="${value}" class="product-img">`;
         } else {
             tableHTML += `<tr><td class="label">${key}</td><td class="value">${value}</td></tr>`;
         }
