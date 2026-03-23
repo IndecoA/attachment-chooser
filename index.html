@@ -6,41 +6,46 @@
     <title>Indeco Product Search</title>
     <style>
         :root { --indeco-red: #e74c3c; --indeco-blue: #3498db; }
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background: #f4f7f6; margin: 0; padding: 20px; color: #333; }
-        .container { max-width: 800px; margin: 0 auto; }
-        .header { text-align: center; margin-bottom: 30px; }
+        body { font-family: sans-serif; background: #f4f7f6; padding: 20px; }
+        .search-box { background: white; padding: 20px; border-radius: 12px; text-align: center; margin-bottom: 30px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
         
-        .search-box { background: white; padding: 25px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); text-align: center; margin-bottom: 30px; }
-        input[type="number"] { padding: 12px; width: 150px; border: 2px solid #ddd; border-radius: 8px; font-size: 18px; margin-right: 10px; }
-        button { padding: 12px 25px; background: #2c3e50; color: white; border: none; border-radius: 8px; font-size: 16px; cursor: pointer; font-weight: bold; }
-        button:active { transform: scale(0.98); }
+        /* Grid for Results */
+        #results { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 15px; }
+        
+        /* Product Cards */
+        .card { padding: 20px; border-radius: 10px; color: white; text-align: center; cursor: pointer; transition: 0.2s; }
+        .card:hover { transform: scale(1.02); }
+        .red { background: var(--indeco-red); }
+        .blue { background: var(--indeco-blue); }
+        .card h3 { margin: 0 0 10px 0; font-size: 24px; }
+        .card-btn { background: white; color: #333; border: none; padding: 10px; border-radius: 5px; cursor: pointer; font-weight: bold; width: 100%; }
 
-        #results { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
-        .card { padding: 20px; border-radius: 12px; color: white; box-shadow: 0 4px 10px rgba(0,0,0,0.15); transition: transform 0.2s; }
-        .card:hover { transform: translateY(-5px); }
-        .red { background: linear-gradient(135deg, var(--indeco-red), #c0392b); }
-        .blue { background: linear-gradient(135deg, var(--indeco-blue), #2980b9); }
-        
-        .card h3 { margin: 0 0 10px 0; font-size: 22px; border-bottom: 1px solid rgba(255,255,255,0.3); padding-bottom: 5px; }
-        .card p { margin: 5px 0; font-size: 15px; opacity: 0.9; }
-        .spec-val { font-weight: bold; float: right; }
-        .loading { text-align: center; font-style: italic; color: #7f8c8d; }
+        /* MODAL STYLES (The Popup) */
+        .modal { display: none; position: fixed; z-index: 100; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); }
+        .modal-content { background: white; margin: 10% auto; padding: 25px; border-radius: 12px; width: 90%; max-width: 500px; color: #333; }
+        .close { float: right; font-size: 28px; cursor: pointer; font-weight: bold; }
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        td { padding: 10px; border-bottom: 1px solid #eee; }
+        tr:nth-child(even) { background: #fafafa; }
+        .spec-label { font-weight: bold; color: #666; width: 60%; }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <div class="header">
-        <h1>Indeco Australia</h1>
-        <p>Product Search by Carrier Weight</p>
-    </div>
+<div class="search-box">
+    <h2>Indeco Product Search</h2>
+    <input type="number" id="weightInput" step="0.1" placeholder="Tons (t)" style="padding: 10px; border-radius: 5px; border: 1px solid #ddd;">
+    <button onclick="performSearch()" style="padding: 10px 20px; background: #333; color: white; border: none; border-radius: 5px; cursor: pointer;">Search</button>
+</div>
 
-    <div class="search-box">
-        <input type="number" id="weightInput" step="0.1" placeholder="Tons (t)">
-        <button onclick="performSearch()">Search</button>
-    </div>
+<div id="results"></div>
 
-    <div id="results"></div>
+<div id="specModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeModal()">&times;</span>
+        <h2 id="modalTitle">Product Specs</h2>
+        <div id="modalBody"></div>
+    </div>
 </div>
 
 <script>
@@ -49,61 +54,84 @@ const sources = [
     { name: 'IDC Series', url: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ_TkMk68IfYl5ennYorexnetsQ55rU6_yXoHukqFqb1G_Ca57kDLZs1TFLh1e28Uz9QdBRz6bxIfOh/pub?gid=1678506384&single=true&output=csv", color: 'blue' } 
 ];
 
+let currentResults = []; // Store specs globally for the popup
+
 async function performSearch() {
     const searchWeight = parseFloat(document.getElementById('weightInput').value);
     const container = document.getElementById('results');
-    
-    if (isNaN(searchWeight)) { alert("Please enter a numeric weight."); return; }
-    
-    container.innerHTML = '<div class="loading">Fetching technical data...</div>';
+    if (isNaN(searchWeight)) return;
+
+    container.innerHTML = "Searching...";
     let resultsHTML = "";
-    let matchFound = false;
+    currentResults = []; // Reset storage
 
     for (const source of sources) {
         try {
-            const response = await fetch(source.url);
-            const csvText = await response.text();
-            // Split by newline and filter out empty rows
-            const rows = csvText.split('\n').map(row => row.split(',')).filter(r => r.length > 1);
+            const res = await fetch(source.url);
+            const text = await res.text();
+            const rows = text.split('\n').map(r => r.split(','));
             const headers = rows[0].map(h => h.trim());
 
-            for (let colIndex = 1; colIndex < headers.length; colIndex++) {
-                const modelName = headers[colIndex];
-                if (!modelName || modelName.trim() === "") continue;
+            for (let col = 1; col < headers.length; col++) {
+                const model = headers[col];
+                if (!model) continue;
 
                 let specs = {};
-                let minW = 0, maxW = 0;
+                let min = 0, max = 0;
+                let weightDisplay = "";
 
-                rows.forEach((row) => {
+                rows.forEach(row => {
                     const label = row[0]?.trim();
-                    const value = row[colIndex]?.trim();
+                    const value = row[col]?.trim();
                     if (label && value) {
                         specs[label] = value;
                         if (label.toLowerCase().includes("carrier weight")) {
-                            // Extract numbers from "1.5 - 3"
-                            const range = value.replace(/[^0-9.\-]/g, '').split('-').map(v => parseFloat(v.trim()));
-                            minW = range[0];
-                            maxW = range[1] || range[0];
+                            weightDisplay = value;
+                            const range = value.replace(/[^0-9.\-]/g, '').split('-').map(v => parseFloat(v));
+                            min = range[0];
+                            max = range[1] || range[0];
                         }
                     }
                 });
 
-                if (searchWeight >= minW && searchWeight <= maxW) {
-                    matchFound = true;
+                if (searchWeight >= min && searchWeight <= max) {
+                    const resultID = currentResults.length;
+                    currentResults.push({ model, specs, color: source.color });
+                    
                     resultsHTML += `
                         <div class="card ${source.color}">
-                            <h3>${modelName}</h3>
-                            <p><strong>Series:</strong> <span class="spec-val">${source.name}</span></p>
-                            <p><strong>Carrier:</strong> <span class="spec-val">${specs['Carrier weight'] || specs['Carrier Weight'] || 'N/A'} t</span></p>
-                            <p><strong>Op. Weight:</strong> <span class="spec-val">${specs['Operating weight'] || 'N/A'} kg</span></p>
+                            <h3>${model}</h3>
+                            <p>Carrier: ${weightDisplay}</p>
+                            <button class="card-btn" onclick="showPopup(${resultID})">View All Specs</button>
                         </div>`;
                 }
             }
-        } catch (error) {
-            console.error(`Error:`, error);
-        }
+        } catch (e) { console.error(e); }
     }
-    container.innerHTML = matchFound ? resultsHTML : '<div class="loading">No matches found for this weight.</div>';
+    container.innerHTML = resultsHTML || "No matches found.";
+}
+
+function showPopup(id) {
+    const item = currentResults[id];
+    document.getElementById('modalTitle').innerText = item.model;
+    
+    let table = "<table>";
+    for (const [label, val] of Object.entries(item.specs)) {
+        table += `<tr><td class="spec-label">${label}</td><td>${val}</td></tr>`;
+    }
+    table += "</table>";
+    
+    document.getElementById('modalBody').innerHTML = table;
+    document.getElementById('specModal').style.display = "block";
+}
+
+function closeModal() {
+    document.getElementById('specModal').style.display = "none";
+}
+
+// Close if clicking outside the white box
+window.onclick = function(event) {
+    if (event.target == document.getElementById('specModal')) closeModal();
 }
 </script>
 
