@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Indeco Australia | Product Search</title>
+    <title>Indeco Australia | Attachment Compatibility</title>
     <style>
         :root { 
             --indeco-red: #e74c3c; --indeco-blue: #3498db; --indeco-green: #27ae60; 
@@ -13,6 +13,7 @@
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f4f7f6; margin: 0; padding: 20px; color: #333; }
         .container { max-width: 1000px; margin: 0 auto; }
         
+        /* Search Interface */
         .search-card { background: white; padding: 30px; border-radius: 15px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); text-align: center; margin-bottom: 30px; }
         .input-group { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-bottom: 20px; }
         
@@ -29,6 +30,7 @@
         #resetBtn { background: var(--gray); color: white; flex: 1; }
         button:hover { opacity: 0.9; }
 
+        /* Loader */
         #progressBox { display: none; text-align: center; padding: 60px 20px; grid-column: 1 / -1; }
         #progressText { font-weight: bold; color: #888; letter-spacing: 2px; text-transform: uppercase; font-size: 14px; }
 
@@ -70,8 +72,8 @@
 
 <div class="container">
     <div class="search-card">
-        <h1 style="margin-top:0; color:var(--dark);">Indeco Product Search</h1>
-        <p style="color:#666; margin-bottom: 20px;">Carrier Weight Search (t)</p>
+        <h1 style="margin-top:0; color:var(--dark);">Indeco Australia Attachment Compatibility</h1>
+        <p style="color:#666; margin-bottom: 20px;">Enter Carrier Weight (t) to find compatible attachments</p>
         
         <div class="input-group">
             <select id="categorySelect">
@@ -96,7 +98,7 @@
 
     <div id="results">
         <div id="progressBox">
-            <div id="progressText">Accessing Indeco Catalog...</div>
+            <div id="progressText">Analyzing Compatibility...</div>
         </div>
     </div>
 </div>
@@ -131,7 +133,7 @@ function resetSearch() {
     document.getElementById('categorySelect').value = "ALL";
     document.getElementById('results').innerHTML = `
         <div id="progressBox">
-            <div id="progressText">Accessing Indeco Catalog...</div>
+            <div id="progressText">Analyzing Compatibility...</div>
         </div>
     `;
     globalResults = [];
@@ -206,7 +208,7 @@ async function performSearch() {
     `).join("");
 
     progressBox.style.display = "none";
-    container.innerHTML = finalHTML || `<p style='grid-column: 1/-1; text-align:center; padding: 40px; color:#888;'>No matches found for ${searchWeight}t.</p>`;
+    container.innerHTML = finalHTML || `<p style='grid-column: 1/-1; text-align:center; padding: 40px; color:#888;'>No attachments found for ${searchWeight}t.</p>`;
 }
 
 function openModal(index) {
