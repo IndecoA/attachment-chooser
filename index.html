@@ -14,9 +14,16 @@
         .container { max-width: 1000px; margin: 0 auto; }
         
         .search-card { background: white; padding: 30px; border-radius: 15px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); text-align: center; margin-bottom: 30px; }
-        input { padding: 15px; width: 180px; border: 2px solid #ddd; border-radius: 8px; font-size: 18px; margin-bottom: 10px; outline: none; }
-        input:focus { border-color: var(--indeco-blue); box-shadow: 0 0 5px rgba(52, 152, 219, 0.3); }
-        button#searchBtn { padding: 15px 30px; background: var(--dark); color: white; border: none; border-radius: 8px; font-size: 18px; cursor: pointer; font-weight: bold; }
+        
+        /* Flex wrapper for inputs to look good on mobile */
+        .input-group { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-bottom: 15px; }
+        
+        input, select { padding: 15px; border: 2px solid #ddd; border-radius: 8px; font-size: 16px; outline: none; transition: border-color 0.2s; }
+        input { width: 140px; }
+        select { background: white; cursor: pointer; min-width: 180px; }
+        input:focus, select:focus { border-color: var(--indeco-blue); }
+
+        button#searchBtn { padding: 15px 30px; background: var(--dark); color: white; border: none; border-radius: 8px; font-size: 18px; cursor: pointer; font-weight: bold; width: 100%; max-width: 340px; }
 
         #progressBox { display: none; width: 100%; max-width: 400px; margin: 20px auto 0 auto; }
         .progress-bg { background: #eee; border-radius: 10px; height: 10px; overflow: hidden; }
@@ -72,15 +79,29 @@
 <div class="container">
     <div class="search-card">
         <h1 style="margin-top:0; color:var(--dark);">Indeco Product Search</h1>
-        <p style="color:#666;">Enter Carrier Weight (t) and press **Enter**</p>
+        <p style="color:#666; margin-bottom: 20px;">Filter by Category and Carrier Weight</p>
         
-        <input type="number" id="weightInput" step="0.1" placeholder="Ex: 14.0" onkeydown="if(event.key === 'Enter') performSearch()">
-        
+        <div class="input-group">
+            <select id="categorySelect">
+                <option value="ALL">All Categories</option>
+                <option value="Hammers">Hammers</option>
+                <option value="IDC">IDC</option>
+                <option value="IMP">IMP</option>
+                <option value="IRP">IRP</option>
+                <option value="IFP">IFP</option>
+                <option value="Shears">Shears</option>
+                <option value="Compaction Plates">Compaction Plates</option>
+                <option value="Mulching Heads">Mulching Heads</option>
+            </select>
+
+            <input type="number" id="weightInput" step="0.1" placeholder="Weight (t)" onkeydown="if(event.key === 'Enter') performSearch()">
+        </div>
+
         <button id="searchBtn" onclick="performSearch()">SEARCH</button>
         
         <div id="progressBox">
             <div class="progress-bg"><div id="progressBar"></div></div>
-            <p id="progressText">Checking catalogs...</p>
+            <p id="progressText">Syncing data...</p>
         </div>
     </div>
     <div id="results"></div>
@@ -112,25 +133,33 @@ const sources = [
 let globalResults = [];
 
 async function performSearch() {
-    const input = document.getElementById('weightInput');
-    const searchWeight = parseFloat(input.value);
+    const selectedCategory = document.getElementById('categorySelect').value;
+    const inputField = document.getElementById('weightInput');
+    const searchWeight = parseFloat(inputField.value);
     const container = document.getElementById('results');
     const progressBox = document.getElementById('progressBox');
     const progressBar = document.getElementById('progressBar');
     const progressText = document.getElementById('progressText');
 
-    if (isNaN(searchWeight)) return;
+    if (isNaN(searchWeight)) {
+        alert("Please enter a carrier weight.");
+        return;
+    }
 
-    // Unfocus input to hide mobile keyboard after Enter
-    input.blur();
-
+    inputField.blur();
     container.innerHTML = "";
     globalResults = [];
+    
+    // Filter the sources based on selection
+    const sourcesToFetch = selectedCategory === "ALL" 
+        ? sources 
+        : sources.filter(s => s.name === selectedCategory);
+
     progressBox.style.display = "block";
     progressBar.style.width = "0%";
     let completed = 0;
 
-    const fetchPromises = sources.map(async (source) => {
+    const fetchPromises = sourcesToFetch.map(async (source) => {
         try {
             const response = await fetch(source.url);
             const csvText = await response.text();
@@ -165,8 +194,8 @@ async function performSearch() {
                 }
             }
             completed++;
-            progressBar.style.width = (completed / sources.length) * 100 + "%";
-            progressText.innerText = `Updating ${source.name}...`;
+            progressBar.style.width = (completed / sourcesToFetch.length) * 100 + "%";
+            progressText.innerText = `Searching ${source.name}...`;
             return matches;
         } catch (e) { completed++; return []; }
     });
@@ -186,7 +215,7 @@ async function performSearch() {
 
     setTimeout(() => {
         progressBox.style.display = "none";
-        container.innerHTML = finalHTML || "<p style='grid-column: 1/-1; text-align:center; padding: 40px;'>No compatible equipment found.</p>";
+        container.innerHTML = finalHTML || `<p style='grid-column: 1/-1; text-align:center; padding: 40px;'>No ${selectedCategory === "ALL" ? "" : selectedCategory} equipment found for ${searchWeight}t.</p>`;
     }, 400);
 }
 
