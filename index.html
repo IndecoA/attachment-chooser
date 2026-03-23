@@ -1,14 +1,52 @@
-const sources = [
-    { 
-        name: 'HP Series', 
-        url: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ_TkMk68IfYl5ennYorexnetsQ55rU6_yXoHukqFqb1G_Ca57kDLZs1TFLh1e28Uz9QdBRz6bxIfOh/pub?gid=1327187491&single=true&output=csv",
-        color: 'red'
-    },
-    { 
-        name: 'IDC Series', 
-        url: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ_TkMk68IfYl5ennYorexnetsQ55rU6_yXoHukqFqb1G_Ca57kDLZs1TFLh1e28Uz9QdBRz6bxIfOh/pub?gid=1678506384&single=true&output=csv",
-        color: 'blue'
-    }
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Indeco Product Search</title>
+    <style>
+        :root { --indeco-red: #e74c3c; --indeco-blue: #3498db; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background: #f4f7f6; margin: 0; padding: 20px; color: #333; }
+        .container { max-width: 800px; margin: 0 auto; }
+        .header { text-align: center; margin-bottom: 30px; }
+        
+        .search-box { background: white; padding: 25px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); text-align: center; margin-bottom: 30px; }
+        input[type="number"] { padding: 12px; width: 150px; border: 2px solid #ddd; border-radius: 8px; font-size: 18px; margin-right: 10px; }
+        button { padding: 12px 25px; background: #2c3e50; color: white; border: none; border-radius: 8px; font-size: 16px; cursor: pointer; font-weight: bold; }
+        button:active { transform: scale(0.98); }
+
+        #results { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
+        .card { padding: 20px; border-radius: 12px; color: white; box-shadow: 0 4px 10px rgba(0,0,0,0.15); transition: transform 0.2s; }
+        .card:hover { transform: translateY(-5px); }
+        .red { background: linear-gradient(135deg, var(--indeco-red), #c0392b); }
+        .blue { background: linear-gradient(135deg, var(--indeco-blue), #2980b9); }
+        
+        .card h3 { margin: 0 0 10px 0; font-size: 22px; border-bottom: 1px solid rgba(255,255,255,0.3); padding-bottom: 5px; }
+        .card p { margin: 5px 0; font-size: 15px; opacity: 0.9; }
+        .spec-val { font-weight: bold; float: right; }
+        .loading { text-align: center; font-style: italic; color: #7f8c8d; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <h1>Indeco Australia</h1>
+        <p>Product Search by Carrier Weight</p>
+    </div>
+
+    <div class="search-box">
+        <input type="number" id="weightInput" step="0.1" placeholder="Tons (t)">
+        <button onclick="performSearch()">Search</button>
+    </div>
+
+    <div id="results"></div>
+</div>
+
+<script>
+const sources = [ 
+    { name: 'HP Series', url: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ_TkMk68IfYl5ennYorexnetsQ55rU6_yXoHukqFqb1G_Ca57kDLZs1TFLh1e28Uz9QdBRz6bxIfOh/pub?gid=1327187491&single=true&output=csv", color: 'red' }, 
+    { name: 'IDC Series', url: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ_TkMk68IfYl5ennYorexnetsQ55rU6_yXoHukqFqb1G_Ca57kDLZs1TFLh1e28Uz9QdBRz6bxIfOh/pub?gid=1678506384&single=true&output=csv", color: 'blue' } 
 ];
 
 async function performSearch() {
@@ -16,8 +54,8 @@ async function performSearch() {
     const container = document.getElementById('results');
     
     if (isNaN(searchWeight)) { alert("Please enter a numeric weight."); return; }
-    container.innerHTML = "Searching all Indeco lines...";
-
+    
+    container.innerHTML = '<div class="loading">Fetching technical data...</div>';
     let resultsHTML = "";
     let matchFound = false;
 
@@ -25,28 +63,25 @@ async function performSearch() {
         try {
             const response = await fetch(source.url);
             const csvText = await response.text();
-            
-            // Cleanup: filter out completely empty rows
+            // Split by newline and filter out empty rows
             const rows = csvText.split('\n').map(row => row.split(',')).filter(r => r.length > 1);
             const headers = rows[0].map(h => h.trim());
 
             for (let colIndex = 1; colIndex < headers.length; colIndex++) {
                 const modelName = headers[colIndex];
-                if (!modelName || modelName === "") continue;
+                if (!modelName || modelName.trim() === "") continue;
 
                 let specs = {};
-                let minW = 0, maxW = 1000; // Default max high so it shows if range is missing
+                let minW = 0, maxW = 0;
 
                 rows.forEach((row) => {
                     const label = row[0]?.trim();
                     const value = row[colIndex]?.trim();
-                    
                     if (label && value) {
                         specs[label] = value;
                         if (label.toLowerCase().includes("carrier weight")) {
-                            // Removes anything that isn't a number, dot, or hyphen
-                            const cleanRange = value.replace(/[^0-9.\-]/g, '');
-                            const range = cleanRange.split('-').map(v => parseFloat(v.trim()));
+                            // Extract numbers from "1.5 - 3"
+                            const range = value.replace(/[^0-9.\-]/g, '').split('-').map(v => parseFloat(v.trim()));
                             minW = range[0];
                             maxW = range[1] || range[0];
                         }
@@ -58,17 +93,19 @@ async function performSearch() {
                     resultsHTML += `
                         <div class="card ${source.color}">
                             <h3>${modelName}</h3>
-                            <p><strong>Series:</strong> ${source.name}</p>
-                            <div class="spec-row"><span>Carrier Weight:</span> <span>${specs['Carrier weight'] || specs['Carrier Weight'] || 'N/A'}</span></div>
-                            <div class="spec-row"><span>Operating Weight:</span> <span>${specs['Operating weight'] || specs['Operating Weight'] || 'N/A'}</span></div>
-                        </div>
-                    `;
+                            <p><strong>Series:</strong> <span class="spec-val">${source.name}</span></p>
+                            <p><strong>Carrier:</strong> <span class="spec-val">${specs['Carrier weight'] || specs['Carrier Weight'] || 'N/A'} t</span></p>
+                            <p><strong>Op. Weight:</strong> <span class="spec-val">${specs['Operating weight'] || 'N/A'} kg</span></p>
+                        </div>`;
                 }
             }
         } catch (error) {
-            console.error(`Error fetching ${source.name}:`, error);
+            console.error(`Error:`, error);
         }
     }
-
-    container.innerHTML = matchFound ? resultsHTML : "No equipment matches this weight across all series.";
+    container.innerHTML = matchFound ? resultsHTML : '<div class="loading">No matches found for this weight.</div>';
 }
+</script>
+
+</body>
+</html>
