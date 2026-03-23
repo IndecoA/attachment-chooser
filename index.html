@@ -4,15 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Indeco Australia | Product Search</title>
-    <style>
+   
+
+</style> <style>
         :root { 
-            --indeco-red: #e74c3c; 
-            --indeco-blue: #3498db; 
-            --indeco-green: #27ae60; 
-            --indeco-orange: #e67e22;
-            --indeco-teal: #1abc9c;
-            --indeco-olive: #808000;
-            --dark: #2c3e50; 
+        --indeco-red: #e74c3c; 
+        --indeco-blue: #3498db; 
+        --indeco-green: #27ae60; 
+        --indeco-orange: #e67e22;
+        --indeco-teal: #1abc9c;
+        --indeco-olive: #556b2f; /* Deep Olive for Mulchers */
+        --dark: #2c3e50; 
         }
         body { font-family: -apple-system, sans-serif; background: #f4f7f6; margin: 0; padding: 20px; }
         .container { max-width: 1000px; margin: 0 auto; }
@@ -29,7 +31,7 @@
         .green { background: linear-gradient(135deg, var(--indeco-green), #1e8449); }
         .orange { background: linear-gradient(135deg, var(--indeco-orange), #d35400); }
         .teal { background: linear-gradient(135deg, var(--indeco-teal), #16a085); }
-        .olive { background: linear-gradient(135deg, var(--indeco-olive), #556b2f); }
+        .olive { background: linear-gradient(135deg, var(--indeco-olive), #3e4f1f); }
 
         .product-card h3 { margin: 0; font-size: 22px; border-bottom: 1px solid rgba(255,255,255,0.2); padding-bottom: 5px; }
         .view-btn { background: white; color: #333; border: none; padding: 12px; border-radius: 6px; cursor: pointer; font-weight: bold; width: 100%; margin-top: 15px; }
@@ -75,7 +77,7 @@ const sources = [
     { name: 'IRP & IFP', color: 'green', url: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ_TkMk68IfYl5ennYorexnetsQ55rU6_yXoHukqFqb1G_Ca57kDLZs1TFLh1e28Uz9QdBRz6bxIfOh/pub?gid=1876797627&single=true&output=csv" },
     { name: 'Shears', color: 'teal', url: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ_TkMk68IfYl5ennYorexnetsQ55rU6_yXoHukqFqb1G_Ca57kDLZs1TFLh1e28Uz9QdBRz6bxIfOh/pub?gid=81790827&single=true&output=csv" },
     { name: 'Compaction Plates', color: 'orange', url: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ_TkMk68IfYl5ennYorexnetsQ55rU6_yXoHukqFqb1G_Ca57kDLZs1TFLh1e28Uz9QdBRz6bxIfOh/pub?gid=159874260&single=true&output=csv" },
-    { name: 'IMP Multi-purpose', color: 'olive', url: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ_TkMk68IfYl5ennYorexnetsQ55rU6_yXoHukqFqb1G_Ca57kDLZs1TFLh1e28Uz9QdBRz6bxIfOh/pub?gid=1484509630&single=true&output=csv" }
+    { name: 'Mulching Heads', color: 'olive', url: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ_TkMk68IfYl5ennYorexnetsQ55rU6_yXoHukqFqb1G_Ca57kDLZs1TFLh1e28Uz9QdBRz6bxIfOh/pub?gid=1484509630&single=true&output=csv" }
 ];
 
 let globalResults = [];
