@@ -56,35 +56,30 @@
 
 <div class="container">
     <div class="search-card">
-        <h1 style="margin-top:0; color:#2c3e50;">Indeco Product Search</h1>
-        <p>Enter Carrier Weight (t) to find compatibility</p>
-        <input type="number" id="weightInput" step="0.1" placeholder="Ex: 15">
-        <button id="searchBtn" onclick="performSearch()">SEARCH</button>
+    <h1 style="margin-top:0; color:#2c3e50;">Indeco Product Search</h1>
+    <p>Enter Carrier Weight (t) to find compatibility</p>
+    <input type="number" id="weightInput" step="0.1" placeholder="Ex: 15">
+    <button id="searchBtn" onclick="performSearch()">SEARCH</button>
+    
+    <div id="progressBox" style="display:none; width:100%; max-width:400px; margin: 20px auto 0 auto;">
+        <div style="background: #eee; border-radius: 10px; height: 10px; overflow: hidden;">
+            <div id="progressBar" style="width: 0%; height: 100%; background: var(--indeco-blue); transition: width 0.3s;"></div>
+        </div>
+        <p id="progressText" style="font-size: 12px; color: #666; margin-top: 5px;">Analyzing catalogs...</p>
     </div>
-    <div id="results"></div>
 </div>
 
-<div id="specModal" class="modal">
-    <div class="modal-content">
-        <div class="modal-header">
-            <h2 id="modalTitle" style="margin:0"></h2>
-            <span style="font-size:30px; cursor:pointer;" onclick="closeModal()">&times;</span>
-        </div>
-        <div id="modalImageContainer"></div>
-        <div class="modal-body"><div id="modalTable"></div></div>
-    </div>
-</div>
+<div id="results"></div>
 
 <script>
 const sources = [
     { name: 'Hammers', color: 'red', url: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ_TkMk68IfYl5ennYorexnetsQ55rU6_yXoHukqFqb1G_Ca57kDLZs1TFLh1e28Uz9QdBRz6bxIfOh/pub?gid=1327187491&single=true&output=csv" },
-    { name: 'Compaction Plates', color: 'orange', url: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ_TkMk68IfYl5ennYorexnetsQ55rU6_yXoHukqFqb1G_Ca57kDLZs1TFLh1e28Uz9QdBRz6bxIfOh/pub?gid=311765735&single=true&output=csv" },
     { name: 'IDC', color: 'blue', url: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ_TkMk68IfYl5ennYorexnetsQ55rU6_yXoHukqFqb1G_Ca57kDLZs1TFLh1e28Uz9QdBRz6bxIfOh/pub?gid=1678506384&single=true&output=csv" },
     { name: 'IMP', color: 'blue', url: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ_TkMk68IfYl5ennYorexnetsQ55rU6_yXoHukqFqb1G_Ca57kDLZs1TFLh1e28Uz9QdBRz6bxIfOh/pub?gid=1484509630&single=true&output=csv" },
     { name: 'IRP', color: 'green', url: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ_TkMk68IfYl5ennYorexnetsQ55rU6_yXoHukqFqb1G_Ca57kDLZs1TFLh1e28Uz9QdBRz6bxIfOh/pub?gid=1876797627&single=true&output=csv" },
     { name: 'IFP', color: 'green', url: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ_TkMk68IfYl5ennYorexnetsQ55rU6_yXoHukqFqb1G_Ca57kDLZs1TFLh1e28Uz9QdBRz6bxIfOh/pub?gid=1097656200&single=true&output=csv" },
     { name: 'Shears', color: 'teal', url: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ_TkMk68IfYl5ennYorexnetsQ55rU6_yXoHukqFqb1G_Ca57kDLZs1TFLh1e28Uz9QdBRz6bxIfOh/pub?gid=81790827&single=true&output=csv" },
-    
+    { name: 'Compaction Plates', color: 'orange', url: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ_TkMk68IfYl5ennYorexnetsQ55rU6_yXoHukqFqb1G_Ca57kDLZs1TFLh1e28Uz9QdBRz6bxIfOh/pub?gid=311765735&single=true&output=csv" },
     { name: 'Mulching Heads', color: 'olive', url: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ_TkMk68IfYl5ennYorexnetsQ55rU6_yXoHukqFqb1G_Ca57kDLZs1TFLh1e28Uz9QdBRz6bxIfOh/pub?gid=159874260&single=true&output=csv" }
 ];
 
@@ -93,18 +88,27 @@ let globalResults = [];
 async function performSearch() {
     const searchWeight = parseFloat(document.getElementById('weightInput').value);
     const container = document.getElementById('results');
+    const progressBox = document.getElementById('progressBox');
+    const progressBar = document.getElementById('progressBar');
+    const progressText = document.getElementById('progressText');
+
     if (isNaN(searchWeight)) return;
 
-    container.innerHTML = "<p style='grid-column: 1/-1; text-align:center'>Searching technical database...</p>";
+    // Reset UI for new search
+    container.innerHTML = "";
     globalResults = [];
-    let resultsHTML = "";
+    progressBox.style.display = "block";
+    progressBar.style.width = "0%";
+    let completedSheets = 0;
 
-    for (const source of sources) {
+    const fetchPromises = sources.map(async (source) => {
         try {
             const response = await fetch(source.url);
             const csvText = await response.text();
             const rows = csvText.split('\n').map(row => row.split(',')).filter(r => r.length > 1);
             const headers = rows[0].map(h => h.trim());
+
+            let matches = [];
 
             for (let col = 1; col < headers.length; col++) {
                 const modelName = headers[col]?.trim();
@@ -129,21 +133,46 @@ async function performSearch() {
                 });
 
                 if (searchWeight >= minW && searchWeight <= maxW) {
-                    const id = globalResults.length;
-                    globalResults.push({ modelName, specs, color: source.color, type: source.name });
-                    resultsHTML += `
-                        <div class="product-card ${source.color}">
-                            <div class="series-label">${source.name}</div>
-                            <button class="view-btn" onclick="openModal(${id})">
-                                <span class="btn-model">${modelName}</span>
-                                <span class="btn-weight">${weightDisplay} t</span>
-                            </button>
-                        </div>`;
+                    matches.push({ modelName, specs, color: source.color, type: source.name, weightDisplay });
                 }
             }
-        } catch (e) { console.error("Error fetching source:", e); }
-    }
-    container.innerHTML = resultsHTML || "<p style='grid-column: 1/-1; text-align:center'>No compatible equipment found.</p>";
+
+            // Update Progress Bar
+            completedSheets++;
+            const percent = (completedSheets / sources.length) * 100;
+            progressBar.style.width = percent + "%";
+            progressText.innerText = `Checked ${source.name}...`;
+
+            return matches;
+        } catch (e) {
+            console.error(`Error in ${source.name}:`, e);
+            completedSheets++;
+            return [];
+        }
+    });
+
+    // Wait for all fetches to finish in parallel
+    const allResults = await Promise.all(fetchPromises);
+    
+    // Flatten and display results
+    const flatResults = allResults.flat();
+    globalResults = flatResults;
+
+    let finalHTML = flatResults.map((item, index) => `
+        <div class="product-card ${item.color}">
+            <div class="series-label">${item.type}</div>
+            <button class="view-btn" onclick="openModal(${index})">
+                <span class="btn-model">${item.modelName}</span>
+                <span class="btn-weight">${item.weightDisplay} t</span>
+            </button>
+        </div>
+    `).join("");
+
+    // Hide progress bar and show results
+    setTimeout(() => {
+        progressBox.style.display = "none";
+        container.innerHTML = finalHTML || "<p style='grid-column: 1/-1; text-align:center'>No compatible equipment found.</p>";
+    }, 400); // Slight delay for smooth visual transition
 }
 
 function openModal(index) {
@@ -166,6 +195,7 @@ function openModal(index) {
 }
 
 function closeModal() { document.getElementById('specModal').style.display = "none"; }
+</script>
 window.onclick = function(e) { if (e.target.className === 'modal') closeModal(); }
 </script>
 </body>
